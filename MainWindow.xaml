@@ -24,19 +24,122 @@
         <Border Grid.Row="0"
                 Background="#2B579A"
                 Padding="10">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="OneNote Add-in Manager"
-                           FontSize="20"
-                           FontWeight="Bold"
-                           Foreground="White"
-                           VerticalAlignment="Center"/>
-                <TextBlock x:Name="AdminStatusText"
-                           Text=""
-                           FontSize="12"
-                           Foreground="Yellow"
-                           Margin="20,0,0,0"
-                           VerticalAlignment="Center"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Title and Status -->
+                <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="OneNote Add-in Manager"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                    <TextBlock x:Name="AdminStatusText"
+                               Text=""
+                               FontSize="12"
+                               Foreground="Yellow"
+                               Margin="20,0,0,0"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- Utility Buttons Row -->
+                <Grid Grid.Column="2" Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button Grid.Column="0"
+                            x:Name="HeaderRefreshButton"
+                            Content="🔄 Refresh"
+                            Click="RefreshButton_Click"
+                            Padding="10,5"
+                            Margin="0,0,10,0"
+                            Background="#4A7BC8"
+                            Foreground="White"
+                            BorderBrush="#6A9BD1"
+                            ToolTip="Refresh add-in list"/>
+                    
+                    <Button Grid.Column="1"
+                            x:Name="HeaderCleanupButton"
+                            Content="🧹 Cleanup"
+                            Click="CleanupButton_Click"
+                            Padding="10,5"
+                            Margin="0,0,10,0"
+                            Background="#4A7BC8"
+                            Foreground="White"
+                            BorderBrush="#6A9BD1"
+                            ToolTip="Remove orphaned registry entries"/>
+                    
+                    <Button Grid.Column="2"
+                            x:Name="HeaderStartOneNoteButton"
+                            Content="▶ Start OneNote"
+                            Click="StartOneNoteButton_Click"
+                            Padding="10,5"
+                            Background="#5CB85C"
+                            Foreground="White"
+                            BorderBrush="#7CC77C"
+                            ToolTip="Start Microsoft OneNote"/>
+                </Grid>
+                
+                <!-- Status Information Row -->
+                <Grid Grid.Column="2" Grid.Row="1" Margin="0,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Refresh Status -->
+                    <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,10,0" Width="90">
+                        <TextBlock x:Name="HeaderRefreshStatusText" 
+                                   Text=""
+                                   FontSize="9"
+                                   Foreground="#CCCCCC"
+                                   HorizontalAlignment="Center"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                    
+                    <!-- Cleanup Status -->
+                    <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,10,0" Width="90">
+                        <TextBlock x:Name="HeaderCleanupStatusText" 
+                                   Text=""
+                                   FontSize="9"
+                                   Foreground="#CCCCCC"
+                                   HorizontalAlignment="Center"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                    
+                    <!-- OneNote Status -->
+                    <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Center" Width="115">
+                        <TextBlock x:Name="HeaderOneNoteStatusText" 
+                                   Text="🔴 Not Running"
+                                   FontSize="9"
+                                   Foreground="#CCCCCC"
+                                   HorizontalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock x:Name="HeaderOneNotePidText" 
+                                       Text=""
+                                       FontSize="8" 
+                                       Foreground="#AAAAAA"/>
+                            <TextBlock x:Name="HeaderOneNoteStartTimeText" 
+                                       Text=""
+                                       FontSize="8" 
+                                       Foreground="#AAAAAA"
+                                       Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Grid>
         </Border>        <!-- Main Content -->
         <Grid Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
@@ -57,19 +160,6 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" 
-                                Orientation="Horizontal" 
-                                Margin="0,0,0,10">
-                        <Button x:Name="RefreshButton"
-                                Content="Refresh"
-                                Click="RefreshButton_Click"
-                                Padding="10,5"/>
-                        <Button x:Name="CleanupButton"
-                                Content="Cleanup"
-                                Click="CleanupButton_Click"
-                                Padding="10,5"
-                                Margin="10,0,0,0"/>
-                    </StackPanel>
 
                     <!-- Simple List showing only names -->
                     <ListBox Grid.Row="1"
@@ -317,27 +407,11 @@
                                             <TextBlock Grid.Row="1" Grid.Column="0" Text="File Locked:" FontWeight="Bold"/>
                                             <TextBlock Grid.Row="1" Grid.Column="1" x:Name="DllLockedText"/>
                                             
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="OneNote Status:" FontWeight="Bold"/>
-                                            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
-                                                <TextBlock x:Name="OneNoteStatusText"/>
-                                                <TextBlock x:Name="OneNotePidText" FontSize="10" Foreground="Gray" Margin="0,2,0,0"/>
-                                                <TextBlock x:Name="OneNoteStartTimeText" FontSize="10" Foreground="Gray"/>
-                                            </StackPanel>
-                                            <Button Grid.Row="2" Grid.Column="2" 
-                                                    x:Name="StartOneNoteButton"
-                                                    Content="▶ Start OneNote"
-                                                    Click="StartOneNoteButton_Click"
-                                                    Padding="8,4"
-                                                    FontSize="11"
-                                                    Margin="10,0,0,0"
-                                                    VerticalAlignment="Top"
-                                                    ToolTip="Start Microsoft OneNote"/>
+                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="File Size:" FontWeight="Bold"/>
+                                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="DllSizeText"/>
                                             
-                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="File Size:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="DllSizeText"/>
-                                            
-                                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Last Modified:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="4" Grid.Column="1" x:Name="DllModifiedText"/>
+                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Last Modified:" FontWeight="Bold"/>
+                                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="DllModifiedText"/>
                                         </Grid>
                                     </Border>
 

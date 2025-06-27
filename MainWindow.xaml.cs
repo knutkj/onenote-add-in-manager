@@ -178,20 +178,41 @@ public partial class MainWindow : Window
 
     private void RefreshButton_Click(object sender, RoutedEventArgs e)
     {
-        LoadAddins();
+        HeaderRefreshStatusText.Text = "Refreshing...";
+        HeaderRefreshStatusText.Foreground = Brushes.Yellow;
+        
+        try
+        {
+            LoadAddins();
+            HeaderRefreshStatusText.Text = $"Updated {DateTime.Now:HH:mm:ss}";
+            HeaderRefreshStatusText.Foreground = Brushes.LightGreen;
+        }
+        catch (Exception ex)
+        {
+            HeaderRefreshStatusText.Text = $"Error: {ex.Message}";
+            HeaderRefreshStatusText.Foreground = Brushes.LightCoral;
+        }
     }
 
     private void CleanupButton_Click(object sender, RoutedEventArgs e)
     {
+        HeaderCleanupStatusText.Text = "Scanning...";
+        HeaderCleanupStatusText.Foreground = Brushes.Yellow;
+        
         try
         {
             var orphaned = _addinManager.FindOrphanedEntries();
             if (orphaned.Count == 0)
             {
+                HeaderCleanupStatusText.Text = "No orphans found";
+                HeaderCleanupStatusText.Foreground = Brushes.LightGreen;
                 MessageBox.Show("No orphaned entries found.", "Cleanup",
                                MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
+
+            HeaderCleanupStatusText.Text = $"Found {orphaned.Count} orphan(s)";
+            HeaderCleanupStatusText.Foreground = Brushes.Orange;
 
             var result = MessageBox.Show(
                 $"Found {orphaned.Count} orphaned entries. Remove them?\n\n" +
@@ -202,13 +223,26 @@ public partial class MainWindow : Window
 
             if (result == MessageBoxResult.Yes)
             {
+                HeaderCleanupStatusText.Text = "Cleaning up...";
+                HeaderCleanupStatusText.Foreground = Brushes.Yellow;
+                
                 _addinManager.CleanupOrphanedEntries();
                 LoadAddins();
                 StatusText.Text = $"Cleaned up {orphaned.Count} orphaned entries";
+                
+                HeaderCleanupStatusText.Text = $"Cleaned {orphaned.Count} orphan(s)";
+                HeaderCleanupStatusText.Foreground = Brushes.LightGreen;
+            }
+            else
+            {
+                HeaderCleanupStatusText.Text = "Cleanup cancelled";
+                HeaderCleanupStatusText.Foreground = Brushes.Gray;
             }
         }
         catch (Exception ex)
         {
+            HeaderCleanupStatusText.Text = $"Error: {ex.Message}";
+            HeaderCleanupStatusText.Foreground = Brushes.LightCoral;
             MessageBox.Show($"Error during cleanup: {ex.Message}", "Error",
                            MessageBoxButton.OK, MessageBoxImage.Error);
         }
@@ -828,43 +862,43 @@ public partial class MainWindow : Window
             var oneNoteProcesses = Process.GetProcessesByName("ONENOTE");
             if (oneNoteProcesses.Length > 0)
             {
-                OneNoteStatusText.Text = "🟢 Running";
-                OneNoteStatusText.Foreground = Brushes.Green;
-                StartOneNoteButton.Content = "⏹ Close OneNote";
-                StartOneNoteButton.ToolTip = "Close all OneNote processes";
+                HeaderOneNoteStatusText.Text = "🟢 OneNote Running";
+                HeaderOneNoteStatusText.Foreground = Brushes.LightGreen;
+                HeaderStartOneNoteButton.Content = "⏹ Close OneNote";
+                HeaderStartOneNoteButton.ToolTip = "Close all OneNote processes";
 
                 try
                 {
                     // Always show all PIDs
                     var allPids = string.Join(", ", oneNoteProcesses.Select(p => p.Id.ToString()));
-                    OneNotePidText.Text = oneNoteProcesses.Length == 1 ? $"PID: {allPids}" : $"PIDs: {allPids}";
+                    HeaderOneNotePidText.Text = oneNoteProcesses.Length == 1 ? $"PID: {allPids}" : $"PIDs: {allPids}";
 
                     // Show the start time of the OneNote process
                     var oldestProcess = oneNoteProcesses.OrderBy(p => p.StartTime).First();
-                    OneNoteStartTimeText.Text = $"Started: {oldestProcess.StartTime:yyyy-MM-dd HH:mm:ss}";
+                    HeaderOneNoteStartTimeText.Text = $"Started: {oldestProcess.StartTime:HH:mm:ss}";
                 }
                 catch (Exception ex)
                 {
-                    OneNotePidText.Text = "PID: Access denied";
-                    OneNoteStartTimeText.Text = $"Error: {ex.Message}";
+                    HeaderOneNotePidText.Text = "PID: Access denied";
+                    HeaderOneNoteStartTimeText.Text = $"Error: {ex.Message}";
                 }
             }
             else
             {
-                OneNoteStatusText.Text = "🔴 Not Running";
-                OneNoteStatusText.Foreground = Brushes.Red;
-                StartOneNoteButton.Content = "▶ Start OneNote";
-                StartOneNoteButton.ToolTip = "Start Microsoft OneNote";
-                OneNotePidText.Text = "";
-                OneNoteStartTimeText.Text = "";
+                HeaderOneNoteStatusText.Text = "🔴 OneNote Not Running";
+                HeaderOneNoteStatusText.Foreground = Brushes.LightCoral;
+                HeaderStartOneNoteButton.Content = "▶ Start OneNote";
+                HeaderStartOneNoteButton.ToolTip = "Start Microsoft OneNote";
+                HeaderOneNotePidText.Text = "";
+                HeaderOneNoteStartTimeText.Text = "";
             }
         }
         catch (Exception ex)
         {
-            OneNoteStatusText.Text = $"❓ Unknown: {ex.Message}";
-            OneNoteStatusText.Foreground = Brushes.Gray;
-            OneNotePidText.Text = "";
-            OneNoteStartTimeText.Text = "";
+            HeaderOneNoteStatusText.Text = $"❓ Unknown: {ex.Message}";
+            HeaderOneNoteStatusText.Foreground = Brushes.Gray;
+            HeaderOneNotePidText.Text = "";
+            HeaderOneNoteStartTimeText.Text = "";
         }
     }
 
