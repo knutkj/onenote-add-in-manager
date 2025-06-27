@@ -152,7 +152,7 @@ public partial class MainWindow : Window
         LoadBehaviorExplanationText.Text = addin.LoadBehaviorExplanation;
 
         // Populate registry keys
-        RegistryKeysItemsControl.ItemsSource = addin.RegistryKeys;
+        RegistryKeysDataGrid.ItemsSource = addin.RegistryKeys;
 
         // Enable/disable Open Folder button based on DLL path validity
         UpdateOpenFolderButton(addin.DllPath);

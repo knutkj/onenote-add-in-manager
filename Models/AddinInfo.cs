@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OneNoteAddinManager.Models
 {
@@ -224,5 +225,7 @@ namespace OneNoteAddinManager.Models
         public string Purpose { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>();
+        
+        public string ValuesText => string.Join("; ", Values.Select(kv => $"{kv.Key}: {kv.Value}"));
     }
 }
