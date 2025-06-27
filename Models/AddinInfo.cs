@@ -226,6 +226,8 @@ namespace OneNoteAddinManager.Models
         public string Description { get; set; } = string.Empty;
         public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>();
         
-        public string ValuesText => string.Join("; ", Values.Select(kv => $"{kv.Key}: {kv.Value}"));
+        public string ValuesText => Values?.Any() == true 
+            ? string.Join("; ", Values.Select(kv => $"{kv.Key}: {kv.Value}")) 
+            : string.Empty;
     }
 }
