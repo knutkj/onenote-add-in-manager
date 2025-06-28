@@ -358,21 +358,6 @@ public partial class MainWindow : Window
         LoadDocumentation("welcome");
     }
 
-    private void OverviewLinkButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentationForCurrentTab();
-    }
-
-    private void FieldsLinkButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentation("fields");
-    }
-
-    private void TroubleshootingLinkButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentation("troubleshooting");
-    }
-
     private void DetailsTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Load appropriate documentation when switching between details tabs

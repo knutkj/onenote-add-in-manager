@@ -515,51 +515,20 @@
             <!-- Right Rail - Context Help -->
             <GroupBox Grid.Column="3" 
                       Header="Context Help">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    
-                    <!-- Quick Reference Links -->
-                    <StackPanel Grid.Row="0" 
-                                Orientation="Horizontal" 
-                                Margin="0,0,0,10">
-                        <Button x:Name="OverviewLinkButton"
-                                Content="Overview"
-                                Click="OverviewLinkButton_Click"
-                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                Padding="8,4"
-                                Margin="0,0,5,0"/>
-                        <Button x:Name="FieldsLinkButton"
-                                Content="Fields"
-                                Click="FieldsLinkButton_Click"
-                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                Padding="8,4"
-                                Margin="0,0,5,0"/>
-                        <Button x:Name="TroubleshootingLinkButton"
-                                Content="Troubleshooting"
-                                Click="TroubleshootingLinkButton_Click"
-                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                Padding="8,4"/>
+                <!-- Dynamic Markdown Viewer -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              Background="White"
+                              BorderBrush="LightGray" 
+                              BorderThickness="1">
+                    <StackPanel x:Name="MarkdownContent" 
+                                Margin="15"
+                                Background="White">
+                        <TextBlock Text="Loading context help..." 
+                                   FontFamily="Segoe UI" 
+                                   FontSize="12"/>
                     </StackPanel>
-                    
-                    <!-- Dynamic Markdown Viewer -->
-                    <ScrollViewer Grid.Row="1" 
-                                  VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled"
-                                  Background="White"
-                                  BorderBrush="LightGray" 
-                                  BorderThickness="1">
-                        <StackPanel x:Name="MarkdownContent" 
-                                    Margin="15"
-                                    Background="White">
-                            <TextBlock Text="Loading context help..." 
-                                       FontFamily="Segoe UI" 
-                                       FontSize="12"/>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
+                </ScrollViewer>
             </GroupBox>
         </Grid>
 
