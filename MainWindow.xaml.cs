@@ -126,7 +126,7 @@ public partial class MainWindow : Window
             UnregisterButton.IsEnabled = false;
 
             // Load appropriate documentation when no add-in is selected
-            LoadDocumentation("welcome");
+            DocumentationViewer.DocumentId = "welcome";
         }
     }
 
@@ -341,22 +341,13 @@ public partial class MainWindow : Window
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         // Load welcome documentation when application starts
-        LoadDocumentation("welcome");
+        DocumentationViewer.DocumentId = "welcome";
     }
 
-    private void OverviewLinkButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentationForCurrentTab();
-    }
 
-    private void FieldsLinkButton_Click(object sender, RoutedEventArgs e)
+    private void DocumentationViewer_DocumentChanged(object sender, string documentId)
     {
-        LoadDocumentation("fields");
-    }
-
-    private void TroubleshootingLinkButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentation("troubleshooting");
+        // Handle document change if needed
     }
 
     private void DetailsTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -369,266 +360,19 @@ public partial class MainWindow : Window
     {
         if (DetailsTabControl?.SelectedItem == AddinDetailsTab)
         {
-            LoadDocumentation("Addin-Information");
+            DocumentationViewer.DocumentId = "Addin-Information";
         }
         else if (DetailsTabControl?.SelectedItem == COMDetailsTab)
         {
-            LoadDocumentation("COM-Information");
+            DocumentationViewer.DocumentId = "COM-Information";
         }
         else
         {
             // Fallback when no tab is selected or details are hidden
-            LoadDocumentation("welcome");
+            DocumentationViewer.DocumentId = "welcome";
         }
     }
 
-    private void LoadDocumentation(string topic)
-    {
-        if (MarkdownContent == null)
-            return; // UI not initialized yet
-
-        try
-        {
-            var resourceName = $"OneNoteAddinManager.Documentation.{topic}.md";
-            var assembly = Assembly.GetExecutingAssembly();
-
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream == null)
-            {
-                // Fallback to file system
-                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Documentation", $"{topic}.md");
-                if (File.Exists(filePath))
-                {
-                    var content = File.ReadAllText(filePath);
-                    DisplaySimpleMarkdown(content);
-                }
-                else
-                {
-                    MarkdownContent.Children.Clear();
-                    MarkdownContent.Children.Add(new TextBlock
-                    {
-                        Text = $"Documentation for '{topic}' not found.",
-                        FontFamily = new FontFamily("Segoe UI"),
-                        FontSize = 12
-                    });
-                }
-                return;
-            }
-
-            using var reader = new StreamReader(stream);
-            var markdownContent = reader.ReadToEnd();
-            DisplaySimpleMarkdown(markdownContent);
-        }
-        catch (Exception ex)
-        {
-            MarkdownContent.Children.Clear();
-            MarkdownContent.Children.Add(new TextBlock
-            {
-                Text = $"Error loading documentation: {ex.Message}",
-                FontFamily = new FontFamily("Segoe UI"),
-                FontSize = 12,
-                Foreground = Brushes.Red
-            });
-        }
-    }
-
-    private void DisplaySimpleMarkdown(string markdownContent)
-    {
-        MarkdownContent.Children.Clear();
-
-        var lines = markdownContent.Split('\n');
-        var currentParagraph = new System.Text.StringBuilder();
-
-        foreach (var line in lines)
-        {
-            var trimmedLine = line.TrimEnd();
-
-            if (string.IsNullOrWhiteSpace(trimmedLine))
-            {
-                // End current paragraph if it has content
-                if (currentParagraph.Length > 0)
-                {
-                    AddParagraph(currentParagraph.ToString());
-                    currentParagraph.Clear();
-                }
-                continue;
-            }
-
-            // Headers
-            if (trimmedLine.StartsWith("# "))
-            {
-                // Finish current paragraph first
-                if (currentParagraph.Length > 0)
-                {
-                    AddParagraph(currentParagraph.ToString());
-                    currentParagraph.Clear();
-                }
-
-                AddHeader1(trimmedLine.Substring(2));
-                continue;
-            }
-
-            if (trimmedLine.StartsWith("## "))
-            {
-                if (currentParagraph.Length > 0)
-                {
-                    AddParagraph(currentParagraph.ToString());
-                    currentParagraph.Clear();
-                }
-
-                AddHeader2(trimmedLine.Substring(3));
-                continue;
-            }
-
-            if (trimmedLine.StartsWith("### "))
-            {
-                if (currentParagraph.Length > 0)
-                {
-                    AddParagraph(currentParagraph.ToString());
-                    currentParagraph.Clear();
-                }
-
-                AddHeader3(trimmedLine.Substring(4));
-                continue;
-            }
-
-            // List items
-            if (trimmedLine.StartsWith("- ") || trimmedLine.StartsWith("* "))
-            {
-                if (currentParagraph.Length > 0)
-                {
-                    AddParagraph(currentParagraph.ToString());
-                    currentParagraph.Clear();
-                }
-
-                AddListItem(trimmedLine.Substring(2));
-                continue;
-            }
-
-            // Code blocks (simple detection)
-            if (trimmedLine.StartsWith("```"))
-            {
-                continue; // Skip markdown code fences
-            }
-
-            // Regular paragraph text
-            if (currentParagraph.Length > 0)
-            {
-                currentParagraph.AppendLine();
-            }
-            currentParagraph.Append(ProcessBoldText(trimmedLine));
-        }
-
-        // Add final paragraph if exists
-        if (currentParagraph.Length > 0)
-        {
-            AddParagraph(currentParagraph.ToString());
-        }
-    }
-
-    private void AddHeader1(string text)
-    {
-        var textBlock = new TextBlock
-        {
-            Text = text,
-            FontSize = 20,
-            FontWeight = FontWeights.Bold,
-            Foreground = new SolidColorBrush(Color.FromRgb(0x2B, 0x57, 0x9A)),
-            Margin = new Thickness(0, 15, 0, 10),
-            TextWrapping = TextWrapping.Wrap
-        };
-        MarkdownContent.Children.Add(textBlock);
-    }
-
-    private void AddHeader2(string text)
-    {
-        var textBlock = new TextBlock
-        {
-            Text = text,
-            FontSize = 16,
-            FontWeight = FontWeights.Bold,
-            Foreground = new SolidColorBrush(Color.FromRgb(0x2B, 0x57, 0x9A)),
-            Margin = new Thickness(0, 12, 0, 8),
-            TextWrapping = TextWrapping.Wrap
-        };
-        MarkdownContent.Children.Add(textBlock);
-    }
-
-    private void AddHeader3(string text)
-    {
-        var textBlock = new TextBlock
-        {
-            Text = text,
-            FontSize = 14,
-            FontWeight = FontWeights.Bold,
-            Foreground = new SolidColorBrush(Color.FromRgb(0x33, 0x33, 0x33)),
-            Margin = new Thickness(0, 10, 0, 6),
-            TextWrapping = TextWrapping.Wrap
-        };
-        MarkdownContent.Children.Add(textBlock);
-    }
-
-    private void AddListItem(string text)
-    {
-        var textBlock = new TextBlock
-        {
-            Text = "• " + ProcessBoldText(text),
-            FontSize = 12,
-            Margin = new Thickness(20, 2, 0, 2),
-            TextWrapping = TextWrapping.Wrap,
-            FontFamily = new FontFamily("Segoe UI")
-        };
-        MarkdownContent.Children.Add(textBlock);
-    }
-
-    private void AddParagraph(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text)) return;
-
-        var textBlock = new TextBlock
-        {
-            FontSize = 12,
-            Margin = new Thickness(0, 0, 0, 8),
-            TextWrapping = TextWrapping.Wrap,
-            FontFamily = new FontFamily("Segoe UI"),
-            LineHeight = 18
-        };
-
-        // Process bold formatting
-        ProcessBoldInlines(textBlock, text);
-
-        MarkdownContent.Children.Add(textBlock);
-    }
-
-    private string ProcessBoldText(string text)
-    {
-        // Simple bold removal for plain text scenarios
-        return text.Replace("**", "");
-    }
-
-    private void ProcessBoldInlines(TextBlock textBlock, string text)
-    {
-        var parts = text.Split(new[] { "**" }, StringSplitOptions.None);
-        bool isBold = false;
-
-        foreach (var part in parts)
-        {
-            if (string.IsNullOrEmpty(part))
-            {
-                isBold = !isBold;
-                continue;
-            }
-
-            var run = new Run(part);
-            if (isBold)
-            {
-                run.FontWeight = FontWeights.Bold;
-            }
-
-            textBlock.Inlines.Add(run);
-            isBold = !isBold;
-        }
-    }
 
     private void WireUpAddInInfoControlEvents()
     {
@@ -651,7 +395,7 @@ public partial class MainWindow : Window
             _ => "fields"
         };
         
-        LoadDocumentation(documentationTopic);
+        DocumentationViewer.DocumentId = documentationTopic;
     }
 
     private void OneNoteControl_StatusChanged(object? sender, string status)
@@ -661,6 +405,6 @@ public partial class MainWindow : Window
 
     private void LoadBehaviorInfoButton_Click(object sender, RoutedEventArgs e)
     {
-        LoadDocumentation("field-loadbehavior");
+        DocumentationViewer.DocumentId = "field-loadbehavior";
     }
 }
