@@ -1,60 +1,54 @@
-# OneNote Add-in Manager
+# OneNote Add-In Manager
 
-A WPF application for managing OneNote add-ins on Windows. This tool helps
-developers and users to easily register, enable/disable, and manage OneNote
-add-ins through a user-friendly interface.
+OneNote Add-In Manager is a Windows Presentation Foundation (WPF) based
+application for Windows that explains and manages the Windows Registry entries
+required for Microsoft OneNote add-ins to load and work correctly.
+
+This app is designed both as a **learning tool** and a **practical utility** for
+developers and IT administrators who need to understand or configure OneNote
+add-in registration.
+
+## What It Does
+
+- **Teaches** the basics of the Windows Registry, with a focus on OneNote
+  add-ins.
+- **Explains** the specific registry keys and values used by OneNote to discover
+  and load add-ins.
+- **Shows** COM registration concepts and how OneNote uses them to instantiate
+  add-in classes.
+- **Lets you** browse, view, and edit add-in registry entries on your local
+  machine.
+- **Includes** a built-in example add-in registration to help you get started
+  even if you have no existing add-ins.
+
+## How It Works
+
+OneNote add-ins rely on COM components. For OneNote to find and load these
+components, their CLSIDs and settings must be correctly registered in the
+Windows Registry.
+
+This app displays:
+
+- Registry paths like
+  `HKEY_CURRENT_USER\Software\Microsoft\Office\OneNote\Addins`.
+- Individual registry keys and their data types (e.g., String, DWORD).
+- Common values such as `LoadBehavior` and their meanings.
+- COM Class registration under `HKEY_CLASSES_ROOT\CLSID`.
+
+It provides explanations in clear, organized **Markdown** pages so users can
+learn as they explore.
 
 ## Features
 
-- **View Installed Add-ins**: See all currently registered OneNote add-ins with
-  their status and location
-- **Enable/Disable Add-ins**: Toggle add-ins on or off without manual registry
-  editing
-- **Register New Add-ins**: Register new add-ins from DLL files for development
-  or testing
-- **Cleanup Orphaned Entries**: Remove registry entries for add-ins whose files
-  no longer exist
+- 📖 Educational content about the Windows Registry and COM registration for
+  OneNote add-ins.
+- 🔍 View existing OneNote add-in registrations on your machine.
+- ✏️ Edit registry entries safely within the app.
+- 🧭 Built-in sample add-in to demonstrate typical registration.
 
-## Usage
+## Who Should Use This
 
-### Managing Add-ins
-
-1. **View Add-ins**: The main grid shows all registered OneNote add-ins
-2. **Enable/Disable**: Click the Enable/Disable button next to any add-in
-3. **Register New Add-in**:
-   - Click "..." to browse for a DLL file
-   - Click "Register Add-in" to register it
-4. **Cleanup**: Click "Cleanup Orphaned" to remove entries for missing DLL files
-
-## Registry Locations
-
-The application manages these registry keys:
-
-- `HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\OneNote\AddIns\` - Add-in
-  registration
-- `HKEY_CLASSES_ROOT\AppID\{GUID}` - AppID entries
-- `HKEY_CLASSES_ROOT\CLSID\{GUID}` - CLSID entries
-- `HKEY_CLASSES_ROOT\WOW6432Node\CLSID\{GUID}` - 32-bit CLSID entries (if
-  applicable)
-
-## Building from Source
-
-```bash
-# Restore dependencies
-dotnet restore
-
-# Build the application
-dotnet build
-
-# Run the application
-dotnet run
-```
-
-## License
-
-This project is provided as-is for educational and development purposes.
-
-## Contributing
-
-Feel free to submit issues, feature requests, or pull requests to improve the
-application.
+- Developers building OneNote add-ins.
+- IT administrators deploying or troubleshooting add-ins.
+- Anyone wanting to learn about how OneNote integrates with the Windows Registry
+  and COM.
