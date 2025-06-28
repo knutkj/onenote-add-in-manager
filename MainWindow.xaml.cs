@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -28,11 +27,6 @@ public partial class MainWindow : Window
     private readonly ObservableCollection<AddinInfo> _addins;
     private AddinInfo? _selectedAddin;
 
-    // Live monitoring components
-    private ManagementEventWatcher? _processStartWatcher;
-    private ManagementEventWatcher? _processStopWatcher;
-    private FileSystemWatcher? _fileWatcher;
-    private System.Windows.Threading.DispatcherTimer? _statusUpdateTimer;
 
     public MainWindow()
     {
@@ -48,6 +42,9 @@ public partial class MainWindow : Window
             Console.WriteLine("InitializeComponent completed");
 
             AddinsListBox.ItemsSource = _addins;
+            
+            // Wire up OneNote control event
+            HeaderOneNoteControl.StatusChanged += OneNoteControl_StatusChanged;
             Console.WriteLine("ListBox bound");
 
             CheckAdminPrivileges();
@@ -59,8 +56,6 @@ public partial class MainWindow : Window
             // Load initial documentation when window is loaded
             Loaded += MainWindow_Loaded;
 
-            // Setup live monitoring
-            SetupLiveMonitoring();
 
         }
         catch (Exception ex)
@@ -156,8 +151,6 @@ public partial class MainWindow : Window
         // Update DLL information
         DllInfoControl.DllPath = addin.DllPath;
 
-        // Setup file monitoring for the selected add-in's DLL
-        SetupFileMonitoring(addin.DllPath);
     }
 
     private void HideAddinDetails()
@@ -637,169 +630,6 @@ public partial class MainWindow : Window
         }
     }
 
-
-
-
-
-
-
-
-
-
-    private void UpdateOneNoteStatus()
-    {
-        try
-        {
-            var oneNoteProcesses = Process.GetProcessesByName("ONENOTE");
-            if (oneNoteProcesses.Length > 0)
-            {
-                HeaderOneNoteStatusText.Text = "🟢 OneNote Running";
-                HeaderOneNoteStatusText.Foreground = Brushes.LightGreen;
-                HeaderStartOneNoteButton.Content = "⏹ Close OneNote";
-                HeaderStartOneNoteButton.ToolTip = "Close all OneNote processes";
-
-                try
-                {
-                    // Always show all PIDs
-                    var allPids = string.Join(", ", oneNoteProcesses.Select(p => p.Id.ToString()));
-                    HeaderOneNotePidText.Text = oneNoteProcesses.Length == 1 ? $"PID: {allPids}" : $"PIDs: {allPids}";
-
-                    // Show the start time of the OneNote process
-                    var oldestProcess = oneNoteProcesses.OrderBy(p => p.StartTime).First();
-                    HeaderOneNoteStartTimeText.Text = $"Started: {oldestProcess.StartTime:HH:mm:ss}";
-                }
-                catch (Exception ex)
-                {
-                    HeaderOneNotePidText.Text = "PID: Access denied";
-                    HeaderOneNoteStartTimeText.Text = $"Error: {ex.Message}";
-                }
-            }
-            else
-            {
-                HeaderOneNoteStatusText.Text = "🔴 OneNote Not Running";
-                HeaderOneNoteStatusText.Foreground = Brushes.LightCoral;
-                HeaderStartOneNoteButton.Content = "▶ Start OneNote";
-                HeaderStartOneNoteButton.ToolTip = "Start Microsoft OneNote";
-                HeaderOneNotePidText.Text = "";
-                HeaderOneNoteStartTimeText.Text = "";
-            }
-        }
-        catch (Exception ex)
-        {
-            HeaderOneNoteStatusText.Text = $"❓ Unknown: {ex.Message}";
-            HeaderOneNoteStatusText.Foreground = Brushes.Gray;
-            HeaderOneNotePidText.Text = "";
-            HeaderOneNoteStartTimeText.Text = "";
-        }
-    }
-
-    private void StartOneNoteButton_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            var oneNoteProcesses = Process.GetProcessesByName("ONENOTE");
-
-            if (oneNoteProcesses.Length > 0)
-            {
-                // Close OneNote without warning
-                StatusText.Text = $"Closing {oneNoteProcesses.Length} OneNote process{(oneNoteProcesses.Length > 1 ? "es" : "")}...";
-
-                // Close all OneNote processes
-                int closedCount = 0;
-                int killedCount = 0;
-
-                foreach (var process in oneNoteProcesses)
-                {
-                    try
-                    {
-                        Console.WriteLine($"Attempting to close OneNote process PID {process.Id}");
-
-                        // First try graceful close
-                        if (process.CloseMainWindow())
-                        {
-                            if (process.WaitForExit(5000))
-                            {
-                                closedCount++;
-                                Console.WriteLine($"Process PID {process.Id} closed gracefully");
-                            }
-                            else
-                            {
-                                // Force kill if graceful close didn't work
-                                process.Kill();
-                                process.WaitForExit(2000);
-                                killedCount++;
-                                Console.WriteLine($"Process PID {process.Id} was force killed");
-                            }
-                        }
-                        else
-                        {
-                            // No main window, force kill
-                            process.Kill();
-                            process.WaitForExit(2000);
-                            killedCount++;
-                            Console.WriteLine($"Process PID {process.Id} had no main window, force killed");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error closing OneNote process PID {process.Id}: {ex.Message}");
-                    }
-                }
-
-                // Update status message
-                var statusMessage = $"Closed {closedCount} process{(closedCount != 1 ? "es" : "")}";
-                if (killedCount > 0)
-                    statusMessage += $", killed {killedCount}";
-
-                StatusText.Text = statusMessage;
-
-                // Update UI after a delay to allow processes to fully terminate
-                var timer = new System.Windows.Threading.DispatcherTimer
-                {
-                    Interval = TimeSpan.FromSeconds(2)
-                };
-                timer.Tick += (s, args) =>
-                {
-                    timer.Stop();
-                    UpdateOneNoteStatus();
-                    StatusText.Text = "Ready - OneNote closed";
-                };
-                timer.Start();
-            }
-            else
-            {
-                // No OneNote running, start it
-                var startInfo = new ProcessStartInfo
-                {
-                    FileName = "onenote",
-                    UseShellExecute = true
-                };
-
-                Process.Start(startInfo);
-                StatusText.Text = "Starting OneNote...";
-
-                // Update status after a delay
-                var timer = new System.Windows.Threading.DispatcherTimer
-                {
-                    Interval = TimeSpan.FromSeconds(3)
-                };
-                timer.Tick += (s, args) =>
-                {
-                    timer.Stop();
-                    UpdateOneNoteStatus();
-                    StatusText.Text = "Ready - OneNote started";
-                };
-                timer.Start();
-            }
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Error managing OneNote: {ex.Message}", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
-
-
     private void WireUpAddInInfoControlEvents()
     {
         if (AddInInfoControl.DataContext is OneNoteAddinManager.ViewModels.AddInInfoViewModel viewModel)
@@ -824,194 +654,13 @@ public partial class MainWindow : Window
         LoadDocumentation(documentationTopic);
     }
 
+    private void OneNoteControl_StatusChanged(object? sender, string status)
+    {
+        StatusText.Text = status;
+    }
+
     private void LoadBehaviorInfoButton_Click(object sender, RoutedEventArgs e)
     {
         LoadDocumentation("field-loadbehavior");
     }
-
-
-    private void SetupLiveMonitoring()
-    {
-        try
-        {
-            // Setup process monitoring for OneNote
-            SetupProcessMonitoring();
-
-            // Setup periodic status updates
-            _statusUpdateTimer = new System.Windows.Threading.DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(2) // Update every 2 seconds
-            };
-            _statusUpdateTimer.Tick += StatusUpdateTimer_Tick;
-            _statusUpdateTimer.Start();
-
-            Console.WriteLine("Live monitoring setup completed");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error setting up live monitoring: {ex.Message}");
-            // Continue without live monitoring
-        }
-    }
-
-    private void SetupProcessMonitoring()
-    {
-        try
-        {
-            // Monitor process start events for OneNote
-            var startQuery = new WqlEventQuery(
-                "SELECT * FROM Win32_ProcessStartTrace WHERE ProcessName = 'ONENOTE.EXE'");
-            _processStartWatcher = new ManagementEventWatcher(startQuery);
-            _processStartWatcher.EventArrived += OnOneNoteProcessStarted;
-            _processStartWatcher.Start();
-
-            // Monitor process stop events for OneNote
-            var stopQuery = new WqlEventQuery(
-                "SELECT * FROM Win32_ProcessStopTrace WHERE ProcessName = 'ONENOTE.EXE'");
-            _processStopWatcher = new ManagementEventWatcher(stopQuery);
-            _processStopWatcher.EventArrived += OnOneNoteProcessStopped;
-            _processStopWatcher.Start();
-
-            Console.WriteLine("Process monitoring setup completed");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Process monitoring setup failed: {ex.Message}");
-            // Fall back to timer-based monitoring only
-        }
-    }
-
-    private void SetupFileMonitoring(string? dllPath)
-    {
-        // Clean up existing file watcher
-        _fileWatcher?.Dispose();
-        _fileWatcher = null;
-
-        if (string.IsNullOrWhiteSpace(dllPath) || !File.Exists(dllPath))
-            return;
-
-        try
-        {
-            var directory = Path.GetDirectoryName(dllPath);
-            var fileName = Path.GetFileName(dllPath);
-
-            if (string.IsNullOrEmpty(directory) || string.IsNullOrEmpty(fileName))
-                return;
-
-            _fileWatcher = new FileSystemWatcher(directory, fileName)
-            {
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.Attributes,
-                EnableRaisingEvents = true
-            };
-
-            _fileWatcher.Changed += OnDllFileChanged;
-            _fileWatcher.Error += OnFileWatcherError;
-
-            Console.WriteLine($"File monitoring setup for: {dllPath}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"File monitoring setup failed: {ex.Message}");
-        }
-    }
-
-    private void OnOneNoteProcessStarted(object sender, EventArrivedEventArgs e)
-    {
-        Dispatcher.Invoke(() =>
-        {
-            UpdateOneNoteStatus();
-            StatusText.Text = "OneNote process started";
-
-            // Update DLL lock status after a delay (give OneNote time to load)
-            var timer = new System.Windows.Threading.DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(3)
-            };
-            timer.Tick += (s, args) =>
-            {
-                timer.Stop();
-            };
-            timer.Start();
-        });
-    }
-
-    private void OnOneNoteProcessStopped(object sender, EventArrivedEventArgs e)
-    {
-        Dispatcher.Invoke(() =>
-        {
-            UpdateOneNoteStatus();
-            StatusText.Text = "OneNote process stopped";
-        });
-    }
-
-    private void OnDllFileChanged(object sender, FileSystemEventArgs e)
-    {
-        // Debounce file change events (they often fire multiple times)
-        var timer = new System.Windows.Threading.DispatcherTimer
-        {
-            Interval = TimeSpan.FromMilliseconds(500)
-        };
-        timer.Tick += (s, args) =>
-        {
-            timer.Stop();
-            Dispatcher.Invoke(() =>
-            {
-                if (_selectedAddin?.DllPath != null &&
-                    string.Equals(e.FullPath, _selectedAddin.DllPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    // Force refresh by setting the same path again
-                    string? currentPath = DllInfoControl.DllPath;
-                    DllInfoControl.DllPath = null;  // Clear first
-                    DllInfoControl.DllPath = currentPath;  // Set again to trigger update
-                    StatusText.Text = $"DLL file updated: {Path.GetFileName(e.Name)}";
-                }
-            });
-        };
-        timer.Start();
-    }
-
-    private void OnFileWatcherError(object sender, ErrorEventArgs e)
-    {
-        Console.WriteLine($"File watcher error: {e.GetException().Message}");
-        Dispatcher.Invoke(() =>
-        {
-            // Try to restart file monitoring
-            if (_selectedAddin?.DllPath != null)
-            {
-                SetupFileMonitoring(_selectedAddin.DllPath);
-            }
-        });
-    }
-
-    private void StatusUpdateTimer_Tick(object? sender, EventArgs e)
-    {
-        // This timer is no longer needed for lock status - DllInformationControl manages itself
-    }
-
-
-    protected override void OnClosed(EventArgs e)
-    {
-        // Cleanup monitoring resources
-        try
-        {
-            _processStartWatcher?.Stop();
-            _processStartWatcher?.Dispose();
-
-            _processStopWatcher?.Stop();
-            _processStopWatcher?.Dispose();
-
-            _fileWatcher?.Dispose();
-            _statusUpdateTimer?.Stop();
-
-            Console.WriteLine("Live monitoring cleaned up");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error cleaning up monitoring: {ex.Message}");
-        }
-
-        base.OnClosed(e);
-    }
-
-
 }
