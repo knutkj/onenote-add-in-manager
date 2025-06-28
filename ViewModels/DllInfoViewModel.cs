@@ -47,6 +47,9 @@ namespace OneNoteAddinManager.ViewModels
                     
                     // Load assembly information on initialization
                     LoadAssemblyInformation();
+                    
+                    // Notify UI that assembly properties may have changed
+                    NotifyAssemblyPropertiesChanged();
                 }
             }
             
@@ -198,6 +201,16 @@ namespace OneNoteAddinManager.ViewModels
                 if (_assemblyFile?.Exists != true) return "N/A";
                 return _assemblyFile.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
             }
+        }
+
+        private void NotifyAssemblyPropertiesChanged()
+        {
+            OnPropertyChanged(nameof(AssemblyVersionText));
+            OnPropertyChanged(nameof(FileVersionText));
+            OnPropertyChanged(nameof(TargetFrameworkText));
+            OnPropertyChanged(nameof(ImplementedInterfacesText));
+            OnPropertyChanged(nameof(AssemblyArchitectureText));
+            OnPropertyChanged(nameof(CompanyText));
         }
 
         private void LoadAssemblyInformation()
@@ -468,6 +481,11 @@ namespace OneNoteAddinManager.ViewModels
         {
             _lockStatusTimer?.Stop();
             _lockStatusTimer = null;
+            
+            // Note: In .NET Core/5+, Assembly instances don't need explicit disposal
+            // The LoadFrom context will be cleaned up by GC
+            _loadedAssembly = null;
+            _versionInfo = null;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
