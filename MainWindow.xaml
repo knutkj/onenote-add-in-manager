@@ -81,15 +81,9 @@
                             BorderBrush="#6A9BD1"
                             ToolTip="Remove orphaned registry entries"/>
                     
-                    <Button Grid.Column="2"
-                            x:Name="HeaderStartOneNoteButton"
-                            Content="▶ Start OneNote"
-                            Click="StartOneNoteButton_Click"
-                            Padding="10,5"
-                            Background="#5CB85C"
-                            Foreground="White"
-                            BorderBrush="#7CC77C"
-                            ToolTip="Start Microsoft OneNote"/>
+                    <controls:OneNoteControl Grid.Column="2"
+                                             x:Name="HeaderOneNoteControl"
+                                             StatusChanged="OneNoteControl_StatusChanged"/>
                 </Grid>
                 
                 <!-- Status Information Row -->
@@ -120,25 +114,7 @@
                                    TextWrapping="Wrap"/>
                     </StackPanel>
                     
-                    <!-- OneNote Status -->
-                    <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Center" Width="115">
-                        <TextBlock x:Name="HeaderOneNoteStatusText" 
-                                   Text="🔴 Not Running"
-                                   FontSize="9"
-                                   Foreground="#CCCCCC"
-                                   HorizontalAlignment="Center"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock x:Name="HeaderOneNotePidText" 
-                                       Text=""
-                                       FontSize="8" 
-                                       Foreground="#AAAAAA"/>
-                            <TextBlock x:Name="HeaderOneNoteStartTimeText" 
-                                       Text=""
-                                       FontSize="8" 
-                                       Foreground="#AAAAAA"
-                                       Margin="3,0,0,0"/>
-                        </StackPanel>
-                    </StackPanel>
+                    <!-- OneNote Status - now handled by OneNoteControl tooltip -->
                 </Grid>
             </Grid>
         </Border>        <!-- Main Content -->
@@ -231,7 +207,6 @@
                                         <Button x:Name="LoadBehaviorInfoButton"
                                                 Content="ℹ"
                                                 Click="LoadBehaviorInfoButton_Click"
-                                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                                 Width="20" Height="20"
                                                 FontSize="12"
                                                 Foreground="#2E7CE6"
@@ -374,19 +349,16 @@
                         <Button x:Name="OverviewLinkButton"
                                 Content="Overview"
                                 Click="OverviewLinkButton_Click"
-                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                 Padding="8,4"
                                 Margin="0,0,5,0"/>
                         <Button x:Name="FieldsLinkButton"
                                 Content="Fields"
                                 Click="FieldsLinkButton_Click"
-                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                 Padding="8,4"
                                 Margin="0,0,5,0"/>
                         <Button x:Name="TroubleshootingLinkButton"
                                 Content="Troubleshooting"
                                 Click="TroubleshootingLinkButton_Click"
-                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                 Padding="8,4"/>
                     </StackPanel>
                     
