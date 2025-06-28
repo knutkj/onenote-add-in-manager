@@ -158,7 +158,7 @@ public partial class MainWindow : Window
         UpdateOpenFolderButton(addin.DllPath);
 
         // Update DLL information
-        UpdateDllInformation(addin.DllPath);
+        DllInfoControl.DllPath = addin.DllPath;
 
         // Setup file monitoring for the selected add-in's DLL
         SetupFileMonitoring(addin.DllPath);
@@ -748,112 +748,12 @@ public partial class MainWindow : Window
         LoadDocumentation("field-loadbehavior");
     }
 
-    private void UpdateDllInformation(string? dllPath)
-    {
-        if (string.IsNullOrWhiteSpace(dllPath))
-        {
-            DllExistsText.Text = "N/A";
-            DllLockedText.Text = "N/A";
-            DllSizeText.Text = "N/A";
-            DllModifiedText.Text = "N/A";
-        }
-        else
-        {
-            try
-            {
-                if (File.Exists(dllPath))
-                {
-                    DllExistsText.Text = "✓ Yes";
-                    DllExistsText.Foreground = Brushes.Green;
-
-                    var fileInfo = new FileInfo(dllPath);
-                    DllSizeText.Text = FormatFileSize(fileInfo.Length);
-                    DllModifiedText.Text = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
-
-                    // Check if file is locked with detailed information
-                    var (isLocked, lockDetails) = CheckFileLock(dllPath);
-                    if (isLocked)
-                    {
-                        DllLockedText.Text = "🔒 Yes";
-                        DllLockedText.Foreground = Brushes.Orange;
-                        DllLockedText.ToolTip = lockDetails;
-                    }
-                    else
-                    {
-                        DllLockedText.Text = "🔓 No";
-                        DllLockedText.Foreground = Brushes.Green;
-                        DllLockedText.ToolTip = lockDetails;
-                    }
-                }
-                else
-                {
-                    DllExistsText.Text = "❌ No";
-                    DllExistsText.Foreground = Brushes.Red;
-                    DllLockedText.Text = "N/A";
-                    DllSizeText.Text = "N/A";
-                    DllModifiedText.Text = "N/A";
-                }
-            }
-            catch (Exception ex)
-            {
-                DllExistsText.Text = $"Error: {ex.Message}";
-                DllExistsText.Foreground = Brushes.Red;
-                DllLockedText.Text = "Unknown";
-                DllSizeText.Text = "Unknown";
-                DllModifiedText.Text = "Unknown";
-            }
-        }
-
-        // Update OneNote status
-        UpdateOneNoteStatus();
-    }
-
-    private (bool IsLocked, string Details) CheckFileLock(string filePath)
-    {
-        try
-        {
-            if (!File.Exists(filePath))
-                return (false, "File does not exist");
-
-            // Simple file lock check - try to open file for writing
-            try
-            {
-                using var stream = File.Open(filePath, FileMode.Open, FileAccess.Write, FileShare.None);
-                return (false, "Not locked");
-            }
-            catch (IOException)
-            {
-                return (true, "File is locked");
-            }
-        }
-        catch (Exception ex)
-        {
-            return (false, $"Error checking lock: {ex.Message}");
-        }
-    }
 
 
 
 
 
-    private bool IsFileLocked(string filePath)
-    {
-        var (isLocked, _) = CheckFileLock(filePath);
-        return isLocked;
-    }
 
-    private string FormatFileSize(long bytes)
-    {
-        string[] sizes = { "B", "KB", "MB", "GB" };
-        double len = bytes;
-        int order = 0;
-        while (len >= 1024 && order < sizes.Length - 1)
-        {
-            order++;
-            len = len / 1024;
-        }
-        return $"{len:0.##} {sizes[order]}";
-    }
 
     private void UpdateOneNoteStatus()
     {
@@ -971,10 +871,6 @@ public partial class MainWindow : Window
                 {
                     timer.Stop();
                     UpdateOneNoteStatus();
-                    if (_selectedAddin?.DllPath != null)
-                    {
-                        UpdateDllInformation(_selectedAddin.DllPath);
-                    }
                     StatusText.Text = "Ready - OneNote closed";
                 };
                 timer.Start();
@@ -1000,10 +896,6 @@ public partial class MainWindow : Window
                 {
                     timer.Stop();
                     UpdateOneNoteStatus();
-                    if (_selectedAddin?.DllPath != null)
-                    {
-                        UpdateDllInformation(_selectedAddin.DllPath);
-                    }
                     StatusText.Text = "Ready - OneNote started";
                 };
                 timer.Start();
@@ -1158,10 +1050,6 @@ public partial class MainWindow : Window
             timer.Tick += (s, args) =>
             {
                 timer.Stop();
-                if (_selectedAddin?.DllPath != null)
-                {
-                    UpdateDllLockStatus(_selectedAddin.DllPath);
-                }
             };
             timer.Start();
         });
@@ -1173,12 +1061,6 @@ public partial class MainWindow : Window
         {
             UpdateOneNoteStatus();
             StatusText.Text = "OneNote process stopped";
-
-            // Update DLL lock status immediately
-            if (_selectedAddin?.DllPath != null)
-            {
-                UpdateDllLockStatus(_selectedAddin.DllPath);
-            }
         });
     }
 
@@ -1197,7 +1079,10 @@ public partial class MainWindow : Window
                 if (_selectedAddin?.DllPath != null &&
                     string.Equals(e.FullPath, _selectedAddin.DllPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    UpdateDllInformation(_selectedAddin.DllPath);
+                    // Force refresh by setting the same path again
+                    string? currentPath = DllInfoControl.DllPath;
+                    DllInfoControl.DllPath = null;  // Clear first
+                    DllInfoControl.DllPath = currentPath;  // Set again to trigger update
                     StatusText.Text = $"DLL file updated: {Path.GetFileName(e.Name)}";
                 }
             });
@@ -1220,85 +1105,9 @@ public partial class MainWindow : Window
 
     private void StatusUpdateTimer_Tick(object? sender, EventArgs e)
     {
-        // Periodic update for file lock status (fallback when events don't work)
-        // But don't spam the console with repeated checks
-        if (_selectedAddin?.DllPath != null)
-        {
-            UpdateDllLockStatusQuiet(_selectedAddin.DllPath);
-        }
+        // This timer is no longer needed for lock status - DllInformationControl manages itself
     }
 
-    private void UpdateDllLockStatus(string dllPath)
-    {
-        if (!File.Exists(dllPath))
-            return;
-
-        try
-        {
-            var wasLocked = DllLockedText.Text.Contains("🔒");
-            var (isLocked, lockDetails) = CheckFileLock(dllPath);
-
-            // Only update UI if status changed
-            if (isLocked != wasLocked)
-            {
-                if (isLocked)
-                {
-                    DllLockedText.Text = "🔒 Yes";
-                    DllLockedText.Foreground = Brushes.Orange;
-                    DllLockedText.ToolTip = lockDetails;
-                }
-                else
-                {
-                    DllLockedText.Text = "🔓 No";
-                    DllLockedText.Foreground = Brushes.Green;
-                    DllLockedText.ToolTip = lockDetails;
-                }
-
-                // Log lock status changes for debugging
-                Console.WriteLine($"DLL lock status changed: {(isLocked ? "LOCKED" : "UNLOCKED")} - {lockDetails}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating DLL lock status: {ex.Message}");
-        }
-    }
-
-    private void UpdateDllLockStatusQuiet(string dllPath)
-    {
-        if (!File.Exists(dllPath))
-            return;
-
-        try
-        {
-            var wasLocked = DllLockedText.Text.Contains("🔒");
-            var (isLocked, lockDetails) = CheckFileLock(dllPath);
-
-            // Only update UI if status changed
-            if (isLocked != wasLocked)
-            {
-                if (isLocked)
-                {
-                    DllLockedText.Text = "🔒 Yes";
-                    DllLockedText.Foreground = Brushes.Orange;
-                    DllLockedText.ToolTip = lockDetails;
-                }
-                else
-                {
-                    DllLockedText.Text = "🔓 No";
-                    DllLockedText.Foreground = Brushes.Green;
-                    DllLockedText.ToolTip = lockDetails;
-                }
-
-                // Log lock status changes for debugging
-                Console.WriteLine($"DLL lock status changed: {(isLocked ? "LOCKED" : "UNLOCKED")} - {lockDetails}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating DLL lock status: {ex.Message}");
-        }
-    }
 
     protected override void OnClosed(EventArgs e)
     {

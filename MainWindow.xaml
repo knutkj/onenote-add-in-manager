@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OneNoteAddinManager"
+        xmlns:controls="clr-namespace:OneNoteAddinManager.Controls"
         mc:Ignorable="d"
         Title="OneNote Add-in Manager"
         Height="600"
@@ -381,39 +382,7 @@
                                                FontWeight="Bold" 
                                                Margin="0,0,0,10"/>
                                     
-                                    <Border Background="#F8F8F8" 
-                                            Padding="15" 
-                                            Margin="0,0,0,20" 
-                                            CornerRadius="5"
-                                            BorderBrush="#E0E0E0"
-                                            BorderThickness="1">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="120"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            
-                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="File Exists:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="DllExistsText"/>
-                                            
-                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="File Locked:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="DllLockedText"/>
-                                            
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="File Size:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="DllSizeText"/>
-                                            
-                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Last Modified:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="DllModifiedText"/>
-                                        </Grid>
-                                    </Border>
+                                    <controls:DllInformationControl x:Name="DllInfoControl" Margin="0,0,0,20"/>
 
                                 </StackPanel>
                             </ScrollViewer>
