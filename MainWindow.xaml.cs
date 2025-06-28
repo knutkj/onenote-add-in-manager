@@ -61,6 +61,7 @@ public partial class MainWindow : Window
 
             // Setup live monitoring
             SetupLiveMonitoring();
+
         }
         catch (Exception ex)
         {
@@ -139,13 +140,11 @@ public partial class MainWindow : Window
         WelcomeText.Visibility = Visibility.Collapsed;
         DetailsTabControl.Visibility = Visibility.Visible;
 
-        // Populate basic information
-        NameText.Text = addin.Name;
-        FriendlyNameText.Text = addin.FriendlyName;
-        AddinStatusText.Text = addin.Status;
-        GuidText.Text = addin.Guid ?? "Not Available";
-        DllPathText.Text = addin.DllPath ?? "Not Available";
-        RegistryPathText.Text = addin.OfficeAddinRegistryPath;
+        // Update Add-in Information Control
+        AddInInfoControl.RegistryPath = addin.OfficeAddinRegistryPath;
+        
+        // Wire up events for the new ViewModel
+        WireUpAddInInfoControlEvents();
 
         // Populate LoadBehavior information
         LoadBehaviorText.Text = $"LoadBehavior: {addin.LoadBehavior}";
@@ -154,26 +153,20 @@ public partial class MainWindow : Window
         // Populate registry keys
         RegistryKeysItemsControl.ItemsSource = addin.RegistryKeys;
 
-        // Enable/disable Open Folder button based on DLL path validity
-        UpdateOpenFolderButton(addin.DllPath);
-
         // Update DLL information
         DllInfoControl.DllPath = addin.DllPath;
 
         // Setup file monitoring for the selected add-in's DLL
         SetupFileMonitoring(addin.DllPath);
-
-        // Enable registry buttons when add-in is selected
-        UpdateRegistryButtons(addin);
     }
 
     private void HideAddinDetails()
     {
         WelcomeText.Visibility = Visibility.Visible;
         DetailsTabControl.Visibility = Visibility.Collapsed;
-        OpenDllFolderButton.IsEnabled = false;
-        OpenRegistryButton.IsEnabled = false;
-        CopyRegistryPathButton.IsEnabled = false;
+        
+        // Clear the Add-in Information Control
+        AddInInfoControl.RegistryPath = null;
     }
 
     private void RefreshButton_Click(object sender, RoutedEventArgs e)
@@ -644,109 +637,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void UpdateOpenFolderButton(string? dllPath)
-    {
-        if (string.IsNullOrWhiteSpace(dllPath))
-        {
-            OpenDllFolderButton.IsEnabled = false;
-            OpenDllFolderButton.ToolTip = "DLL path not available";
-            return;
-        }
 
-        try
-        {
-            var directory = Path.GetDirectoryName(dllPath);
-            if (!string.IsNullOrEmpty(directory) && Directory.Exists(directory))
-            {
-                OpenDllFolderButton.IsEnabled = true;
-                OpenDllFolderButton.ToolTip = $"Open folder: {directory}";
-            }
-            else
-            {
-                OpenDllFolderButton.IsEnabled = false;
-                OpenDllFolderButton.ToolTip = "DLL folder does not exist";
-            }
-        }
-        catch
-        {
-            OpenDllFolderButton.IsEnabled = false;
-            OpenDllFolderButton.ToolTip = "Invalid DLL path";
-        }
-    }
-
-    private void OpenDllFolderButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedAddin?.DllPath == null)
-        {
-            MessageBox.Show("No DLL path available for the selected add-in.", "Information",
-                           MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-
-        try
-        {
-            var directory = Path.GetDirectoryName(_selectedAddin.DllPath);
-            if (string.IsNullOrEmpty(directory))
-            {
-                MessageBox.Show("Could not determine the DLL folder path.", "Error",
-                               MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            if (!Directory.Exists(directory))
-            {
-                MessageBox.Show($"The DLL folder does not exist:\n{directory}", "Folder Not Found",
-                               MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // Open the folder in Windows Explorer
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "explorer.exe",
-                Arguments = $"\"{directory}\"",
-                UseShellExecute = true
-            });
-
-            StatusText.Text = $"Opened folder: {directory}";
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Error opening folder: {ex.Message}", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
-
-    // Field Information Button Click Handlers
-    private void NameInfoButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentation("field-name");
-    }
-
-    private void FriendlyNameInfoButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentation("field-friendlyname");
-    }
-
-    private void StatusInfoButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentation("field-status");
-    }
-
-    private void GuidInfoButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentation("field-guid");
-    }
-
-    private void DllPathInfoButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentation("field-dllpath");
-    }
-
-    private void LoadBehaviorInfoButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadDocumentation("field-loadbehavior");
-    }
 
 
 
@@ -908,47 +799,36 @@ public partial class MainWindow : Window
         }
     }
 
-    private void RegistryPathInfoButton_Click(object sender, RoutedEventArgs e)
+
+    private void WireUpAddInInfoControlEvents()
     {
-        LoadDocumentation("field-registrypath");
-    }
-
-    private void UpdateRegistryButtons(AddinInfo addin)
-    {
-        if (addin == null || string.IsNullOrWhiteSpace(addin.Name))
+        if (AddInInfoControl.DataContext is OneNoteAddinManager.ViewModels.AddInInfoViewModel viewModel)
         {
-            OpenRegistryButton.IsEnabled = false;
-            CopyRegistryPathButton.IsEnabled = false;
-            OpenRegistryButton.ToolTip = "Add-in name not available";
-            CopyRegistryPathButton.ToolTip = "Add-in name not available";
-            return;
-        }
-
-        OpenRegistryButton.IsEnabled = true;
-        CopyRegistryPathButton.IsEnabled = true;
-        OpenRegistryButton.ToolTip = "Open Registry Editor";
-        CopyRegistryPathButton.ToolTip = $"Copy registry path to clipboard: {addin.OfficeAddinRegistryPath}";
-    }
-
-    private void OpenRegistryButton_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            // Simply open Registry Editor
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "regedit.exe",
-                UseShellExecute = true
-            });
-
-            StatusText.Text = "Opened Registry Editor";
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Error opening Registry Editor: {ex.Message}", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
+            viewModel.InfoRequested += AddInInfoViewModel_InfoRequested;
         }
     }
+
+    private void AddInInfoViewModel_InfoRequested(object? sender, OneNoteAddinManager.ViewModels.InfoRequestedEventArgs e)
+    {
+        string documentationTopic = e.FieldName.ToLower() switch
+        {
+            "name" => "field-name",
+            "friendlyname" => "field-friendlyname", 
+            "status" => "field-status",
+            "guid" => "field-guid",
+            "dllpath" => "field-dllpath",
+            "registrypath" => "field-registrypath",
+            _ => "fields"
+        };
+        
+        LoadDocumentation(documentationTopic);
+    }
+
+    private void LoadBehaviorInfoButton_Click(object sender, RoutedEventArgs e)
+    {
+        LoadDocumentation("field-loadbehavior");
+    }
+
 
     private void SetupLiveMonitoring()
     {
@@ -1134,25 +1014,4 @@ public partial class MainWindow : Window
     }
 
 
-    private void CopyRegistryPathButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedAddin == null)
-        {
-            MessageBox.Show("No add-in is currently selected.", "Information",
-                           MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-
-        try
-        {
-            var registryPath = _selectedAddin.OfficeAddinRegistryPath;
-            Clipboard.SetText(registryPath);
-            StatusText.Text = $"Copied to clipboard: {registryPath}";
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Error copying to clipboard: {ex.Message}", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
 }
