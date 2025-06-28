@@ -3,6 +3,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using System.Collections.Generic;
 using OneNoteAddinManager.Models;
 
 namespace OneNoteAddinManager.ViewModels
@@ -19,6 +23,11 @@ namespace OneNoteAddinManager.ViewModels
         // ViewModel-specific state (not part of the immutable model)
         private bool _isLocked = false;
         private string _lockDetails = string.Empty;
+        
+        // Assembly information cache
+        private Assembly? _loadedAssembly;
+        private FileVersionInfo? _versionInfo;
+        private bool _assemblyLoadAttempted = false;
 
         public DllInfoViewModel(string? assemblyPath)
         {
@@ -35,6 +44,9 @@ namespace OneNoteAddinManager.ViewModels
                     var (isLocked, details) = CheckFileLock(assemblyPath);
                     _isLocked = isLocked;
                     _lockDetails = details;
+                    
+                    // Load assembly information on initialization
+                    LoadAssemblyInformation();
                 }
             }
             
@@ -75,6 +87,61 @@ namespace OneNoteAddinManager.ViewModels
                     _lockDetails = value;
                     OnPropertyChanged();
                 }
+            }
+        }
+
+        // Assembly information properties
+        public string AssemblyVersionText
+        {
+            get
+            {
+                if (_assemblyFile?.Exists != true) return "N/A";
+                return GetAssemblyVersion();
+            }
+        }
+
+        public string FileVersionText
+        {
+            get
+            {
+                if (_assemblyFile?.Exists != true) return "N/A";
+                return GetFileVersion();
+            }
+        }
+
+        public string TargetFrameworkText
+        {
+            get
+            {
+                if (_assemblyFile?.Exists != true) return "N/A";
+                return GetTargetFramework();
+            }
+        }
+
+        public string ImplementedInterfacesText
+        {
+            get
+            {
+                if (_assemblyFile?.Exists != true) return "N/A";
+                return GetImplementedInterfaces();
+            }
+        }
+
+        public string AssemblyArchitectureText
+        {
+            get
+            {
+                if (_assemblyFile?.Exists != true) return "N/A";
+                return GetAssemblyArchitecture();
+            }
+        }
+
+        public string CompanyText
+        {
+            get
+            {
+                if (_assemblyFile?.Exists != true) return "N/A";
+                return GetCompany();
             }
         }
 
@@ -133,6 +200,205 @@ namespace OneNoteAddinManager.ViewModels
             }
         }
 
+        private void LoadAssemblyInformation()
+        {
+            if (_assemblyLoadAttempted || _assemblyPath == null || _assemblyFile?.Exists != true)
+                return;
+
+            _assemblyLoadAttempted = true;
+
+            try
+            {
+                // Load version information from file
+                _versionInfo = FileVersionInfo.GetVersionInfo(_assemblyPath);
+                
+                // Try to load the assembly for reflection
+                try
+                {
+                    _loadedAssembly = Assembly.LoadFrom(_assemblyPath);
+                }
+                catch
+                {
+                    // If we can't load the assembly, we'll still have file version info
+                    _loadedAssembly = null;
+                }
+            }
+            catch
+            {
+                // If anything fails, leave both null
+                _versionInfo = null;
+                _loadedAssembly = null;
+            }
+        }
+
+        private string GetAssemblyVersion()
+        {
+            try
+            {
+                if (_loadedAssembly != null)
+                {
+                    var version = _loadedAssembly.GetName().Version;
+                    return version?.ToString() ?? "Unknown";
+                }
+                return "Unable to load assembly";
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string GetFileVersion()
+        {
+            try
+            {
+                if (_versionInfo != null)
+                {
+                    return _versionInfo.FileVersion ?? "Unknown";
+                }
+                return "Unable to read version";
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string GetTargetFramework()
+        {
+            try
+            {
+                if (_loadedAssembly != null)
+                {
+                    var targetFrameworkAttribute = _loadedAssembly
+                        .GetCustomAttributes(typeof(System.Runtime.Versioning.TargetFrameworkAttribute), false)
+                        .FirstOrDefault() as System.Runtime.Versioning.TargetFrameworkAttribute;
+                    
+                    if (targetFrameworkAttribute != null)
+                    {
+                        return targetFrameworkAttribute.FrameworkName;
+                    }
+                    
+                    // Fallback to runtime version
+                    return $".NET Framework {_loadedAssembly.ImageRuntimeVersion}";
+                }
+                return "Unable to load assembly";
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string GetImplementedInterfaces()
+        {
+            try
+            {
+                if (_loadedAssembly != null)
+                {
+                    var types = _loadedAssembly.GetTypes();
+                    var relevantInterfaces = new List<string>();
+                    var commonInterfaces = new List<string>();
+                    
+                    foreach (var type in types)
+                    {
+                        if (type.IsClass && type.IsPublic)
+                        {
+                            var interfaces = type.GetInterfaces();
+                            foreach (var iface in interfaces)
+                            {
+                                var interfaceName = iface.Name;
+                                var fullName = iface.FullName ?? interfaceName;
+                                
+                                // Look for Office/OneNote specific interfaces
+                                if (interfaceName.Contains("Extensibility") || 
+                                    interfaceName.Contains("Office") ||
+                                    interfaceName.Contains("OneNote") ||
+                                    interfaceName.Contains("IDTExtensibility") ||
+                                    interfaceName.Contains("IRibbonExtensibility") ||
+                                    interfaceName.Contains("ICustomTaskPaneConsumer"))
+                                {
+                                    if (!relevantInterfaces.Contains(interfaceName))
+                                    {
+                                        relevantInterfaces.Add(interfaceName);
+                                    }
+                                }
+                                // Track common COM interfaces
+                                else if (interfaceName.Contains("IDisposable") ||
+                                        interfaceName.Contains("IUnknown") ||
+                                        interfaceName.Contains("IDispatch"))
+                                {
+                                    if (!commonInterfaces.Contains(interfaceName))
+                                    {
+                                        commonInterfaces.Add(interfaceName);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (relevantInterfaces.Any())
+                    {
+                        return $"Office/OneNote: {string.Join(", ", relevantInterfaces)}";
+                    }
+                    else if (commonInterfaces.Any())
+                    {
+                        return $"COM: {string.Join(", ", commonInterfaces)}";
+                    }
+                    
+                    return "No relevant interfaces found";
+                }
+                return "Unable to load assembly";
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string GetAssemblyArchitecture()
+        {
+            try
+            {
+                if (_loadedAssembly != null)
+                {
+                    // Use Module.GetPEKind for more reliable architecture detection
+                    var module = _loadedAssembly.GetModules()[0];
+                    module.GetPEKind(out var peKind, out var machine);
+                    
+                    return (peKind, machine) switch
+                    {
+                        (PortableExecutableKinds.ILOnly, ImageFileMachine.I386) => "AnyCPU (MSIL)",
+                        (PortableExecutableKinds.Required32Bit, ImageFileMachine.I386) => "x86 (32-bit)",
+                        (PortableExecutableKinds.ILOnly, ImageFileMachine.AMD64) => "x64 (64-bit)",
+                        (PortableExecutableKinds.ILOnly, ImageFileMachine.IA64) => "IA64 (Itanium)",
+                        (PortableExecutableKinds.ILOnly, ImageFileMachine.ARM) => "ARM",
+                        _ => $"Unknown ({peKind}, {machine})"
+                    };
+                }
+                return "Unable to load assembly";
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string GetCompany()
+        {
+            try
+            {
+                if (_versionInfo != null)
+                {
+                    return !string.IsNullOrEmpty(_versionInfo.CompanyName) ? _versionInfo.CompanyName : "Not specified";
+                }
+                return "Unable to read version info";
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
 
         // No UpdateFromPath method - path is immutable after construction!
 

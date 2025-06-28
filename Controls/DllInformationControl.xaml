@@ -22,6 +22,11 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
             <TextBlock Grid.Row="0" Grid.Column="0" Text="File Exists:" FontWeight="Bold"/>
@@ -40,6 +45,25 @@
             
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Last Modified:" FontWeight="Bold"/>
             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LastModifiedText}"/>
+            
+            <!-- Assembly Information Section -->
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Assembly Version:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding AssemblyVersionText}"/>
+            
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="File Version:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding FileVersionText}"/>
+            
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Target Framework:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding TargetFrameworkText}"/>
+            
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Architecture:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding AssemblyArchitectureText}"/>
+            
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Company:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding CompanyText}"/>
+            
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Interfaces:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding ImplementedInterfacesText}" TextWrapping="Wrap"/>
         </Grid>
     </Border>
 </UserControl>
