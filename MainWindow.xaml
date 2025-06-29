@@ -204,15 +204,11 @@
                                         <TextBlock Text="LoadBehavior Configuration" 
                                                    FontSize="16" 
                                                    FontWeight="Bold"/>
-                                        <Button x:Name="LoadBehaviorInfoButton"
-                                                Content="ℹ"
-                                                Click="LoadBehaviorInfoButton_Click"
-                                                Width="20" Height="20"
-                                                FontSize="12"
-                                                Foreground="#2E7CE6"
-                                                Margin="10,0,0,0"
-                                                VerticalAlignment="Center"
-                                                ToolTip="Information about LoadBehavior values"/>
+                                        <controls:InformationButton DocumentationTopic="field-loadbehavior"
+                                                                   ToolTipText="Information about LoadBehavior values"
+                                                                   ShowInfoCommand="{Binding ShowLoadBehaviorInfoCommand}"
+                                                                   Margin="10,0,0,0"
+                                                                   VerticalAlignment="Center"/>
                                     </StackPanel>
                                     
                                     <Border Background="#F0F0F0" 

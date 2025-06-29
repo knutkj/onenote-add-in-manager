@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:OneNoteAddinManager.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
     <Border Background="#F8F8F8" 
@@ -27,51 +28,31 @@
             
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" FontWeight="Bold"/>
             <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" TextWrapping="Wrap"/>
-            <Button Grid.Row="0" Grid.Column="2" 
-                    Content="ℹ"
-                    Command="{Binding ShowInfoCommand}"
-                    CommandParameter="Name"
-                    Width="20" Height="20"
-                    FontSize="12"
-                    Foreground="#2E7CE6"
-                    Margin="5,0,0,0"
-                    ToolTip="Information about the Name field"/>
+            <controls:InformationButton Grid.Row="0" Grid.Column="2"
+                                        DocumentationTopic="Name"
+                                        ToolTipText="Information about the Name field"
+                                        ShowInfoCommand="{Binding ShowInfoCommand}"/>
             
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Friendly Name:" FontWeight="Bold"/>
             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding FriendlyName}" TextWrapping="Wrap"/>
-            <Button Grid.Row="1" Grid.Column="2" 
-                    Content="ℹ"
-                    Command="{Binding ShowInfoCommand}"
-                    CommandParameter="FriendlyName"
-                    Width="20" Height="20"
-                    FontSize="12"
-                    Foreground="#2E7CE6"
-                    Margin="5,0,0,0"
-                    ToolTip="Information about the Friendly Name field"/>
+            <controls:InformationButton Grid.Row="1" Grid.Column="2"
+                                        DocumentationTopic="FriendlyName"
+                                        ToolTipText="Information about the Friendly Name field"
+                                        ShowInfoCommand="{Binding ShowInfoCommand}"/>
             
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Status:" FontWeight="Bold"/>
             <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Status}" TextWrapping="Wrap"/>
-            <Button Grid.Row="2" Grid.Column="2" 
-                    Content="ℹ"
-                    Command="{Binding ShowInfoCommand}"
-                    CommandParameter="Status"
-                    Width="20" Height="20"
-                    FontSize="12"
-                    Foreground="#2E7CE6"
-                    Margin="5,0,0,0"
-                    ToolTip="Information about the Status field"/>
+            <controls:InformationButton Grid.Row="2" Grid.Column="2"
+                                        DocumentationTopic="Status"
+                                        ToolTipText="Information about the Status field"
+                                        ShowInfoCommand="{Binding ShowInfoCommand}"/>
             
             <TextBlock Grid.Row="3" Grid.Column="0" Text="GUID:" FontWeight="Bold"/>
             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Guid}" TextWrapping="Wrap" FontFamily="Consolas"/>
-            <Button Grid.Row="3" Grid.Column="2" 
-                    Content="ℹ"
-                    Command="{Binding ShowInfoCommand}"
-                    CommandParameter="Guid"
-                    Width="20" Height="20"
-                    FontSize="12"
-                    Foreground="#2E7CE6"
-                    Margin="5,0,0,0"
-                    ToolTip="Information about the GUID field"/>
+            <controls:InformationButton Grid.Row="3" Grid.Column="2"
+                                        DocumentationTopic="Guid"
+                                        ToolTipText="Information about the GUID field"
+                                        ShowInfoCommand="{Binding ShowInfoCommand}"/>
             
             <TextBlock Grid.Row="4" Grid.Column="0" Text="DLL Path:" FontWeight="Bold"/>
             <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Vertical">
@@ -85,16 +66,11 @@
                             ToolTip="Open the folder containing the DLL file"/>
                 </StackPanel>
             </StackPanel>
-            <Button Grid.Row="4" Grid.Column="2" 
-                    Content="ℹ"
-                    Command="{Binding ShowInfoCommand}"
-                    CommandParameter="DllPath"
-                    Width="20" Height="20"
-                    FontSize="12"
-                    Foreground="#2E7CE6"
-                    Margin="5,0,0,0"
-                    VerticalAlignment="Top"
-                    ToolTip="Information about the DLL Path field"/>
+            <controls:InformationButton Grid.Row="4" Grid.Column="2"
+                                        DocumentationTopic="DllPath"
+                                        ToolTipText="Information about the DLL Path field"
+                                        ShowInfoCommand="{Binding ShowInfoCommand}"
+                                        VerticalAlignment="Top"/>
             
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Registry Path:" FontWeight="Bold"/>
             <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Vertical">
@@ -115,16 +91,11 @@
                             ToolTip="Copy registry path to clipboard"/>
                 </StackPanel>
             </StackPanel>
-            <Button Grid.Row="5" Grid.Column="2" 
-                    Content="ℹ"
-                    Command="{Binding ShowInfoCommand}"
-                    CommandParameter="RegistryPath"
-                    Width="20" Height="20"
-                    FontSize="12"
-                    Foreground="#2E7CE6"
-                    Margin="5,0,0,0"
-                    VerticalAlignment="Top"
-                    ToolTip="Information about the Registry Path"/>
+            <controls:InformationButton Grid.Row="5" Grid.Column="2"
+                                        DocumentationTopic="RegistryPath"
+                                        ToolTipText="Information about the Registry Path"
+                                        ShowInfoCommand="{Binding ShowInfoCommand}"
+                                        VerticalAlignment="Top"/>
         </Grid>
     </Border>
 </UserControl>
