@@ -1,0 +1,52 @@
+<UserControl x:Name="AddInDetailsPanel1" x:Class="OneNoteAddinManager.Controls.AddInDetailsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:OneNoteAddinManager.Controls" Background="White">
+
+    <StackPanel Margin="10">
+        
+        <!-- Basic Information -->
+        <TextBlock Text="Basic Information" 
+                   FontSize="16" 
+                   FontWeight="Bold"/>
+        
+        <!-- Add-in Information Control -->
+        <controls:AddInInformationControl x:Name="AddInInfoControl" Loaded="AddInInfoControl_Loaded"/>
+        
+        <!-- LoadBehavior Explanation -->
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+            <TextBlock Text="LoadBehavior Configuration" 
+                       FontSize="16" 
+                       FontWeight="Bold"/>
+            <Button x:Name="LoadBehaviorInfoButton"
+                    Content="ℹ"
+                    Click="LoadBehaviorInfoButton_Click"
+                    Width="20" Height="20"
+                    FontSize="12"
+                    Foreground="#2E7CE6"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    ToolTip="Information about LoadBehavior values"/>
+        </StackPanel>
+        
+        <Border Background="#F0F0F0" 
+                Padding="10" 
+                CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="{Binding LoadBehaviorText}" 
+                           FontWeight="Bold" 
+                           Margin="0,0,0,5"/>
+                <TextBlock Text="{Binding LoadBehaviorExplanationText}" 
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- DLL Information -->
+        <TextBlock Text="DLL Information" 
+                   FontSize="16" 
+                   FontWeight="Bold" Margin="0,10,0,0"/>
+        
+        <controls:DllInformationControl x:Name="DllInfoControl"/>
+
+    </StackPanel>
+</UserControl>

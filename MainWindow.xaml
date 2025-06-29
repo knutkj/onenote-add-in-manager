@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:OneNoteAddinManager.Controls"
         mc:Ignorable="d"
         Title="OneNote Add-in Manager"
-        Height="600"
+        Height="800"
         Width="1400"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -187,56 +187,8 @@
                                Visibility="Collapsed">
                         <TabItem Header="Add-in Information" x:Name="AddinDetailsTab">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                <StackPanel x:Name="AddinDetailsPanel" Margin="10">
-                            
-                                    <!-- Basic Information -->
-                                    <TextBlock Text="Basic Information" 
-                                               FontSize="16" 
-                                               FontWeight="Bold" 
-                                               Margin="0,0,0,10"/>
-                                    
-                                    <!-- Add-in Information Control -->
-                                    <controls:AddInInformationControl x:Name="AddInInfoControl" Margin="0,0,0,20"/>
-                                    
-
-                                    <!-- LoadBehavior Explanation -->
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                        <TextBlock Text="LoadBehavior Configuration" 
-                                                   FontSize="16" 
-                                                   FontWeight="Bold"/>
-                                        <Button x:Name="LoadBehaviorInfoButton"
-                                                Content="ℹ"
-                                                Click="LoadBehaviorInfoButton_Click"
-                                                Width="20" Height="20"
-                                                FontSize="12"
-                                                Foreground="#2E7CE6"
-                                                Margin="10,0,0,0"
-                                                VerticalAlignment="Center"
-                                                ToolTip="Information about LoadBehavior values"/>
-                                    </StackPanel>
-                                    
-                                    <Border Background="#F0F0F0" 
-                                            Padding="10" 
-                                            Margin="0,0,0,20" 
-                                            CornerRadius="5">
-                                        <StackPanel>
-                                            <TextBlock x:Name="LoadBehaviorText" 
-                                                       FontWeight="Bold" 
-                                                       Margin="0,0,0,5"/>
-                                            <TextBlock x:Name="LoadBehaviorExplanationText" 
-                                                       TextWrapping="Wrap"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- DLL Information -->
-                                    <TextBlock Text="DLL Information" 
-                                               FontSize="16" 
-                                               FontWeight="Bold" 
-                                               Margin="0,0,0,10"/>
-                                    
-                                    <controls:DllInformationControl x:Name="DllInfoControl" Margin="0,0,0,20"/>
-
-                                </StackPanel>
+                                <controls:AddInDetailsPanel x:Name="AddInDetailsPanel" 
+                                                            RegistryPath="{Binding DataContext.SelectedAddinRegistryPath, RelativeSource={RelativeSource AncestorType=Window}}"/>
                             </ScrollViewer>
                         </TabItem>
                         

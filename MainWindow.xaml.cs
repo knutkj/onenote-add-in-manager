@@ -15,6 +15,7 @@ using System.Windows.Media;
 using Microsoft.Win32;
 using OneNoteAddinManager.Models;
 using OneNoteAddinManager.Services;
+using OneNoteAddinManager.ViewModels;
 
 namespace OneNoteAddinManager;
 
@@ -26,6 +27,7 @@ public partial class MainWindow : Window
     private readonly AddinManager _addinManager;
     private readonly ObservableCollection<AddinInfo> _addins;
     private AddinInfo? _selectedAddin;
+    private MainWindowViewModel _viewModel;
 
 
     public MainWindow()
@@ -35,14 +37,18 @@ public partial class MainWindow : Window
         // Initialize fields first
         _addinManager = new AddinManager();
         _addins = new ObservableCollection<AddinInfo>();
+        _viewModel = new MainWindowViewModel();
 
         try
         {
             InitializeComponent();
             Console.WriteLine("InitializeComponent completed");
 
+            // Set DataContext for MVVM binding (minimal - only for AddInDetailsPanel)
+            this.DataContext = _viewModel;
+
             AddinsListBox.ItemsSource = _addins;
-            
+
             // Wire up OneNote control event
             HeaderOneNoteControl.StatusChanged += OneNoteControl_StatusChanged;
             Console.WriteLine("ListBox bound");
@@ -116,6 +122,9 @@ public partial class MainWindow : Window
             // Update button text
             EnableDisableButton.Content = _selectedAddin.IsEnabled ? "Disable" : "Enable";
 
+            // Update ViewModel for AddInDetailsPanel binding
+            _viewModel.SelectedAddinRegistryPath = _selectedAddin.OfficeAddinRegistryPath;
+
             // Load context-specific documentation based on current details tab
             LoadDocumentationForCurrentTab();
         }
@@ -124,6 +133,9 @@ public partial class MainWindow : Window
             HideAddinDetails();
             EnableDisableButton.IsEnabled = false;
             UnregisterButton.IsEnabled = false;
+
+            // Clear ViewModel
+            _viewModel.SelectedAddinRegistryPath = null;
 
             // Load appropriate documentation when no add-in is selected
             DocumentationViewer.DocumentId = "welcome";
@@ -135,38 +147,23 @@ public partial class MainWindow : Window
         WelcomeText.Visibility = Visibility.Collapsed;
         DetailsTabControl.Visibility = Visibility.Visible;
 
-        // Update Add-in Information Control
-        AddInInfoControl.RegistryPath = addin.OfficeAddinRegistryPath;
-        
-        // Wire up events for the new ViewModel
-        WireUpAddInInfoControlEvents();
-
-        // Populate LoadBehavior information
-        LoadBehaviorText.Text = $"LoadBehavior: {addin.LoadBehavior}";
-        LoadBehaviorExplanationText.Text = addin.LoadBehaviorExplanation;
 
         // Populate registry keys
         RegistryKeysItemsControl.ItemsSource = addin.RegistryKeys;
-
-        // Update DLL information
-        DllInfoControl.DllPath = addin.DllPath;
-
     }
 
     private void HideAddinDetails()
     {
         WelcomeText.Visibility = Visibility.Visible;
         DetailsTabControl.Visibility = Visibility.Collapsed;
-        
-        // Clear the Add-in Information Control
-        AddInInfoControl.RegistryPath = null;
     }
+
 
     private void RefreshButton_Click(object sender, RoutedEventArgs e)
     {
         HeaderRefreshStatusText.Text = "Refreshing...";
         HeaderRefreshStatusText.Foreground = Brushes.Yellow;
-        
+
         try
         {
             LoadAddins();
@@ -184,7 +181,7 @@ public partial class MainWindow : Window
     {
         HeaderCleanupStatusText.Text = "Scanning...";
         HeaderCleanupStatusText.Foreground = Brushes.Yellow;
-        
+
         try
         {
             var orphaned = _addinManager.FindOrphanedEntries();
@@ -211,11 +208,11 @@ public partial class MainWindow : Window
             {
                 HeaderCleanupStatusText.Text = "Cleaning up...";
                 HeaderCleanupStatusText.Foreground = Brushes.Yellow;
-                
+
                 _addinManager.CleanupOrphanedEntries();
                 LoadAddins();
                 StatusText.Text = $"Cleaned up {orphaned.Count} orphaned entries";
-                
+
                 HeaderCleanupStatusText.Text = $"Cleaned {orphaned.Count} orphan(s)";
                 HeaderCleanupStatusText.Foreground = Brushes.LightGreen;
             }
@@ -374,37 +371,10 @@ public partial class MainWindow : Window
     }
 
 
-    private void WireUpAddInInfoControlEvents()
-    {
-        if (AddInInfoControl.DataContext is OneNoteAddinManager.ViewModels.AddInInfoViewModel viewModel)
-        {
-            viewModel.InfoRequested += AddInInfoViewModel_InfoRequested;
-        }
-    }
-
-    private void AddInInfoViewModel_InfoRequested(object? sender, OneNoteAddinManager.ViewModels.InfoRequestedEventArgs e)
-    {
-        string documentationTopic = e.FieldName.ToLower() switch
-        {
-            "name" => "field-name",
-            "friendlyname" => "field-friendlyname", 
-            "status" => "field-status",
-            "guid" => "field-guid",
-            "dllpath" => "field-dllpath",
-            "registrypath" => "field-registrypath",
-            _ => "fields"
-        };
-        
-        DocumentationViewer.DocumentId = documentationTopic;
-    }
 
     private void OneNoteControl_StatusChanged(object? sender, string status)
     {
         StatusText.Text = status;
     }
 
-    private void LoadBehaviorInfoButton_Click(object sender, RoutedEventArgs e)
-    {
-        DocumentationViewer.DocumentId = "field-loadbehavior";
-    }
 }
