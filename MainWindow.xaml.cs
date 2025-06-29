@@ -1,31 +1,37 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
 using OneNoteAddinManager.Models;
 using OneNoteAddinManager.Services;
+using OneNoteAddinManager.ViewModels;
 
 namespace OneNoteAddinManager;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow : Window, INotifyPropertyChanged
 {
     private readonly AddinManager _addinManager;
     private readonly ObservableCollection<AddinInfo> _addins;
     private AddinInfo? _selectedAddin;
+    
+    public ICommand ShowLoadBehaviorInfoCommand { get; private set; }
 
 
     public MainWindow()
@@ -35,11 +41,17 @@ public partial class MainWindow : Window
         // Initialize fields first
         _addinManager = new AddinManager();
         _addins = new ObservableCollection<AddinInfo>();
+        
+        // Initialize commands
+        ShowLoadBehaviorInfoCommand = new RelayCommand<string>(ShowLoadBehaviorInfo);
 
         try
         {
             InitializeComponent();
             Console.WriteLine("InitializeComponent completed");
+            
+            // Set DataContext for command binding
+            DataContext = this;
 
             AddinsListBox.ItemsSource = _addins;
             
@@ -403,8 +415,15 @@ public partial class MainWindow : Window
         StatusText.Text = status;
     }
 
-    private void LoadBehaviorInfoButton_Click(object sender, RoutedEventArgs e)
+    private void ShowLoadBehaviorInfo(string? documentationTopic)
     {
-        DocumentationViewer.DocumentId = "field-loadbehavior";
+        DocumentationViewer.DocumentId = documentationTopic ?? "field-loadbehavior";
+    }
+    
+    public event PropertyChangedEventHandler? PropertyChanged;
+    
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
