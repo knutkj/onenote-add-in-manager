@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using OneNoteAddinManager.App.ViewModels;
+using System.IO.Abstractions;
 
 namespace OneNoteAddinManager.App.Controls
 {
@@ -29,7 +30,7 @@ namespace OneNoteAddinManager.App.Controls
             _viewModel?.Dispose();
             
             // Create new ViewModel for the new path (null = no file)
-            _viewModel = new DllInfoViewModel(dllPath);
+            _viewModel = new DllInfoViewModel(dllPath, new FileSystem());
             this.DataContext = _viewModel;
         }
 

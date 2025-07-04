@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Abstractions;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using OneNoteAddinManager.Lib.Models;
@@ -12,23 +13,25 @@ namespace OneNoteAddinManager.App.ViewModels
     /// </summary>
     public class DllInfoViewModel : INotifyPropertyChanged
     {
-        private readonly FileInfo? _assemblyFile;
+        private readonly IFileSystem _fileSystem;
+        private readonly IFileInfo? _assemblyFile;
         private readonly string? _assemblyPath;
         private System.Windows.Threading.DispatcherTimer? _lockStatusTimer;
-        
+
         // ViewModel-specific state (not part of the immutable model)
         private bool _isLocked = false;
         private string _lockDetails = string.Empty;
 
-        public DllInfoViewModel(string? assemblyPath)
+        public DllInfoViewModel(string? assemblyPath, IFileSystem fileSystem)
         {
+            _fileSystem = fileSystem;
             _assemblyPath = assemblyPath;
-            
+
             // Create FileInfo only if we have a valid path
             if (assemblyPath != null)
             {
-                _assemblyFile = new FileInfo(assemblyPath);
-                
+                _assemblyFile = _fileSystem.FileInfo.New(assemblyPath);
+
                 // Initialize lock status
                 if (_assemblyFile.Exists)
                 {
@@ -37,7 +40,7 @@ namespace OneNoteAddinManager.App.ViewModels
                     _lockDetails = details;
                 }
             }
-            
+
             // Set up periodic lock status checking
             _lockStatusTimer = new System.Windows.Threading.DispatcherTimer
             {
@@ -144,7 +147,7 @@ namespace OneNoteAddinManager.App.ViewModels
             try
             {
                 var (isLocked, details) = CheckFileLock(_assemblyPath);
-                
+
                 // Only update if lock status actually changed
                 if (IsLocked != isLocked)
                 {
@@ -162,7 +165,7 @@ namespace OneNoteAddinManager.App.ViewModels
         {
             try
             {
-                using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Write, FileShare.None))
+                using (var stream = _fileSystem.File.Open(filePath, FileMode.Open, FileAccess.Write, FileShare.None))
                 {
                     return (false, "File is not locked - available for writing");
                 }

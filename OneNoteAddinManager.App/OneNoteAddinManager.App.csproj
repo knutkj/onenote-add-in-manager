@@ -10,21 +10,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-    <PackageReference Include="System.Management" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="System.Management" Version="9.0.6" />
     <EmbeddedResource Include="Documentation\*.md" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Documentation\*.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\OneNoteAddinManager.Lib\OneNoteAddinManager.Lib.csproj" />
   </ItemGroup>
-
 </Project>
