@@ -15,19 +15,13 @@ namespace OneNoteAddinManager.App.Controls
         public AddInInformationControl()
         {
             InitializeComponent();
-            
+
             // Start with no add-in selected (null)
             UpdateViewModel(null);
-            
-            // Clean up ViewModel when control is unloaded
-            this.Unloaded += AddInInformationControl_Unloaded;
         }
 
         private void UpdateViewModel(string? registryPath)
         {
-            // Dispose old ViewModel
-            _viewModel?.Dispose();
-            
             // Create new ViewModel for the new registry path (null = no add-in)
             _viewModel = new AddInInfoViewModel(registryPath);
             this.DataContext = _viewModel;
@@ -50,12 +44,6 @@ namespace OneNoteAddinManager.App.Controls
             // Create new ViewModel instance for new registry path (handle null properly)
             var newPath = e.NewValue as string;
             control.UpdateViewModel(string.IsNullOrEmpty(newPath) ? null : newPath);
-        }
-
-        private void AddInInformationControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            // Clean up ViewModel
-            _viewModel?.Dispose();
         }
     }
 }

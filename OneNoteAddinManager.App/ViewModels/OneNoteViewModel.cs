@@ -11,7 +11,7 @@ namespace OneNoteAddinManager.App.ViewModels
     /// <summary>
     /// ViewModel for OneNote control - contains ALL OneNote management logic
     /// </summary>
-    public class OneNoteViewModel : INotifyPropertyChanged, IDisposable
+    public sealed class OneNoteViewModel : INotifyPropertyChanged, IDisposable
     {
         private System.Windows.Threading.DispatcherTimer? _statusUpdateTimer;
         private string _statusText = "🔴 OneNote Not Running";
@@ -24,10 +24,10 @@ namespace OneNoteAddinManager.App.ViewModels
         public OneNoteViewModel()
         {
             StartStopCommand = new RelayCommand(ExecuteStartStop);
-            
+
             // Initial status update
             UpdateOneNoteStatus();
-            
+
             // Set up periodic status updates
             _statusUpdateTimer = new System.Windows.Threading.DispatcherTimer
             {
@@ -282,7 +282,7 @@ namespace OneNoteAddinManager.App.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

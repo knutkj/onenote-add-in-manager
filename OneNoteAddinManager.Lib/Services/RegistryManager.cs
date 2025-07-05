@@ -16,7 +16,7 @@ namespace OneNoteAddinManager.Lib.Services
         private const string CLASSES_ROOT_CLSID = @"CLSID";
         private const string WOW64_CLSID = @"WOW6432Node\CLSID";
 
-        public List<AddinInfo> GetInstalledAddins()
+        public static List<AddinInfo> GetInstalledAddins()
         {
             var addins = new List<AddinInfo>();
 
@@ -55,7 +55,7 @@ namespace OneNoteAddinManager.Lib.Services
             return addins;
         }
 
-        private AddinInfo CreateAddinFromRegistry(string keyName, RegistryKey subKey)
+        private static AddinInfo CreateAddinFromRegistry(string keyName, RegistryKey subKey)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace OneNoteAddinManager.Lib.Services
             }
         }
 
-        private string FindAddinGuid(string addinName)
+        private static string FindAddinGuid(string addinName)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace OneNoteAddinManager.Lib.Services
             }
         }
 
-        private string FindDllPath(string guid)
+        private static string FindDllPath(string guid)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace OneNoteAddinManager.Lib.Services
         }
 
 
-        public void SetAddinEnabled(AddinInfo addin, bool enabled)
+        public static void SetAddinEnabled(AddinInfo addin, bool enabled)
         {
             try
             {
@@ -163,7 +163,7 @@ namespace OneNoteAddinManager.Lib.Services
             }
         }
 
-        public void RegisterAddin(string name, string friendlyName, string description, string dllPath, string guid)
+        public static void RegisterAddin(string name, string friendlyName, string description, string dllPath, string guid)
         {
             try
             {
@@ -188,7 +188,7 @@ namespace OneNoteAddinManager.Lib.Services
             }
         }
 
-        private void RegisterCLSID(string guid, string progId, string dllPath)
+        private static void RegisterCLSID(string guid, string progId, string dllPath)
         {
             // Register AppID
             using (var appIdKey = Registry.ClassesRoot.CreateSubKey($@"{CLASSES_ROOT_APPID}\{guid}"))
@@ -220,7 +220,7 @@ namespace OneNoteAddinManager.Lib.Services
             }
         }
 
-        public void UnregisterAddin(AddinInfo addin)
+        public static void UnregisterAddin(AddinInfo addin)
         {
             try
             {
@@ -244,7 +244,7 @@ namespace OneNoteAddinManager.Lib.Services
             }
         }
 
-        public bool IsRunningAsAdministrator()
+        public static bool IsRunningAsAdministrator()
         {
             try
             {

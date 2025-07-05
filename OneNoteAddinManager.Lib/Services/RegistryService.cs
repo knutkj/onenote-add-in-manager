@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Versioning;
 using System.Security;
 using DotNetWindowsRegistry;
@@ -25,6 +26,7 @@ namespace OneNoteAddinManager.Lib.Services
         /// Initializes a new instance of the RegistryService.
         /// </summary>
         /// <param name="registry">The registry abstraction to use</param>
+        [SuppressMessage("Style", "IDE0290")]
         public RegistryService(IRegistry registry)
         {
             _registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -190,7 +192,7 @@ namespace OneNoteAddinManager.Lib.Services
 
                 // Register CLSID entries
                 RegisterCLSID(guid, name, dllPath);
-                
+
                 // Create lookup entry for FindAddinGuid
                 using (var clsidLookupKey = _registry.OpenBaseKey(RegistryHive.ClassesRoot, RegistryView.Default).CreateSubKey($@"{name}\CLSID"))
                 {
@@ -252,7 +254,7 @@ namespace OneNoteAddinManager.Lib.Services
                     _registry.OpenBaseKey(RegistryHive.ClassesRoot, RegistryView.Default).DeleteSubKeyTree($@"{CLASSES_ROOT_APPID}\{addin.Guid}", false);
                     _registry.OpenBaseKey(RegistryHive.ClassesRoot, RegistryView.Default).DeleteSubKeyTree($@"{CLASSES_ROOT_CLSID}\{addin.Guid}", false);
                 }
-                
+
                 // Remove lookup entry
                 _registry.OpenBaseKey(RegistryHive.ClassesRoot, RegistryView.Default).DeleteSubKeyTree($@"{addin.Name}", false);
             }

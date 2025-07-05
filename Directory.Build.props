@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Code Style Enforcement -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+</Project>

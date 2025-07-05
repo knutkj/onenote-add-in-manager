@@ -332,8 +332,7 @@
 
             <!-- Right Rail - Documentation Viewer -->
             <controls:DocumentationViewerControl x:Name="DocumentationViewer"
-                                                 Grid.Column="3"
-                                                 DocumentChanged="DocumentationViewer_DocumentChanged"/>
+                                                 Grid.Column="3"/>
         </Grid>
 
         <!-- Status Bar -->

@@ -30,7 +30,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private readonly AddinManager _addinManager;
     private readonly ObservableCollection<AddinInfo> _addins;
     private AddinInfo? _selectedAddin;
-    
+
     public ICommand ShowLoadBehaviorInfoCommand { get; private set; } = null!;
 
 
@@ -44,8 +44,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         // Initialize fields first
         _addinManager = addinManager ?? throw new ArgumentNullException(nameof(addinManager));
-        _addins = new ObservableCollection<AddinInfo>();
-        
+        _addins = [];
+
         InitializeWindow();
     }
 
@@ -65,12 +65,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             InitializeComponent();
             Console.WriteLine("InitializeComponent completed");
-            
+
             // Set DataContext for command binding
             DataContext = this;
 
             AddinsListBox.ItemsSource = _addins;
-            
+
             // Wire up OneNote control event
             HeaderOneNoteControl.StatusChanged += OneNoteControl_StatusChanged;
             Console.WriteLine("ListBox bound");
@@ -165,7 +165,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         // Update Add-in Information Control
         AddInInfoControl.RegistryPath = addin.OfficeAddinRegistryPath;
-        
+
         // Wire up events for the new ViewModel
         WireUpAddInInfoControlEvents();
 
@@ -185,7 +185,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         WelcomeText.Visibility = Visibility.Visible;
         DetailsTabControl.Visibility = Visibility.Collapsed;
-        
+
         // Clear the Add-in Information Control
         AddInInfoControl.RegistryPath = null;
     }
@@ -194,7 +194,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         HeaderRefreshStatusText.Text = "Refreshing...";
         HeaderRefreshStatusText.Foreground = Brushes.Yellow;
-        
+
         try
         {
             LoadAddins();
@@ -212,7 +212,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         HeaderCleanupStatusText.Text = "Scanning...";
         HeaderCleanupStatusText.Foreground = Brushes.Yellow;
-        
+
         try
         {
             var orphaned = _addinManager.FindOrphanedEntries();
@@ -239,11 +239,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             {
                 HeaderCleanupStatusText.Text = "Cleaning up...";
                 HeaderCleanupStatusText.Foreground = Brushes.Yellow;
-                
+
                 _addinManager.CleanupOrphanedEntries();
                 LoadAddins();
                 StatusText.Text = $"Cleaned up {orphaned.Count} orphaned entries";
-                
+
                 HeaderCleanupStatusText.Text = $"Cleaned {orphaned.Count} orphan(s)";
                 HeaderCleanupStatusText.Foreground = Brushes.LightGreen;
             }
@@ -372,12 +372,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         DocumentationViewer.DocumentId = "welcome";
     }
 
-
-    private void DocumentationViewer_DocumentChanged(object sender, string documentId)
-    {
-        // Handle document change if needed
-    }
-
     private void DetailsTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Load appropriate documentation when switching between details tabs
@@ -415,14 +409,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         string documentationTopic = e.FieldName.ToLower() switch
         {
             "name" => "field-name",
-            "friendlyname" => "field-friendlyname", 
+            "friendlyname" => "field-friendlyname",
             "status" => "field-status",
             "guid" => "field-guid",
             "dllpath" => "field-dllpath",
             "registrypath" => "field-registrypath",
             _ => "fields"
         };
-        
+
         DocumentationViewer.DocumentId = documentationTopic;
     }
 
@@ -435,9 +429,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         DocumentationViewer.DocumentId = documentationTopic ?? "field-loadbehavior";
     }
-    
+
     public event PropertyChangedEventHandler? PropertyChanged;
-    
+
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -55,7 +55,7 @@ public class AddinManagerTests
         // Assert
         Assert.IsNotNull(addins);
         Assert.AreEqual(1, addins.Count);
-        
+
         var retrievedAddin = addins.First();
         Assert.AreEqual("TestAddin", retrievedAddin.Name);
         Assert.AreEqual("Test Add-in", retrievedAddin.FriendlyName);
@@ -84,7 +84,7 @@ public class AddinManagerTests
         // Assert
         Assert.AreEqual(3, retrievedAddin.LoadBehavior);
         Assert.IsTrue(retrievedAddin.IsEnabled);
-        
+
         // Verify persistence
         var addinsAfter = _addinManager.GetAllAddins();
         var persistedAddin = addinsAfter.First();
@@ -113,7 +113,7 @@ public class AddinManagerTests
         // Assert
         Assert.AreEqual(0, retrievedAddin.LoadBehavior);
         Assert.IsFalse(retrievedAddin.IsEnabled);
-        
+
         // Verify persistence
         var addinsAfter = _addinManager.GetAllAddins();
         var persistedAddin = addinsAfter.First();
@@ -163,7 +163,7 @@ public class AddinManagerTests
         // Arrange
         // We'll test with a path that exists in the test environment
         var validPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        
+
         var testAddin = new AddinInfo
         {
             Name = "TestAddin",
@@ -234,6 +234,6 @@ public class AddinManagerTests
     public void Constructor_WithNullRegistryService_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsException<ArgumentNullException>(() => new AddinManager(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new AddinManager(null!));
     }
 }
