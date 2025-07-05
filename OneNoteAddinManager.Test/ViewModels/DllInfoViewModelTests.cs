@@ -45,10 +45,10 @@ namespace OneNoteAddinManager.Test.ViewModels
         {
             var fileContent = "This is test content";
             var lastModified = DateTime.Now.AddDays(-1);
-            
-            _mockFileSystem.AddFile(_testFilePath, new MockFileData(fileContent) 
-            { 
-                LastWriteTime = lastModified 
+
+            _mockFileSystem.AddFile(_testFilePath, new MockFileData(fileContent)
+            {
+                LastWriteTime = lastModified
             });
 
             var viewModel = new DllInfoViewModel(_testFilePath, _mockFileSystem);
@@ -65,7 +65,8 @@ namespace OneNoteAddinManager.Test.ViewModels
             var viewModel = new DllInfoViewModel(_testFilePath, _mockFileSystem);
             var propertyChangedEvents = new List<string>();
 
-            viewModel.PropertyChanged += (sender, e) => {
+            viewModel.PropertyChanged += (sender, e) =>
+            {
                 if (e.PropertyName != null)
                     propertyChangedEvents.Add(e.PropertyName);
             };
@@ -103,7 +104,7 @@ namespace OneNoteAddinManager.Test.ViewModels
         public void Dispose_StopsTimer()
         {
             var viewModel = new DllInfoViewModel(_testFilePath, _mockFileSystem);
-            
+
             // This should not throw an exception
             viewModel.Dispose();
         }
