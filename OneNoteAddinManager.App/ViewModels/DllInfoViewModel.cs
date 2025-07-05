@@ -616,7 +616,7 @@ namespace OneNoteAddinManager.App.ViewModels
                 number /= 1024;
                 counter++;
             }
-            return $"{number:n1} {suffixes[counter]}";
+            return $"{number.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)} {suffixes[counter]}";
         }
 
         public void Dispose()
