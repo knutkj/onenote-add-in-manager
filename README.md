@@ -1,6 +1,6 @@
 # OneNote Add-In Manager
 
-[![Code Formatting Check](https://github.com/knutkj/onenote-add-in-manager/actions/workflows/format-check.yml/badge.svg)](https://github.com/knutkj/onenote-add-in-manager/actions/workflows/format-check.yml)
+[![CI Pipeline](https://github.com/knutkj/onenote-add-in-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/knutkj/onenote-add-in-manager/actions/workflows/ci.yml)
 
 OneNote Add-In Manager is a Windows Presentation Foundation (WPF) based
 application for Windows that explains and manages the Windows Registry entries
@@ -57,15 +57,18 @@ learn as they explore.
 
 ## Development
 
-### Code Formatting
+### CI Pipeline
 
-This project uses automated code formatting to maintain consistent style:
+This project uses automated CI/CD to ensure code quality:
 
-- **Automatic checks**: GitHub Actions runs `dotnet format --verify-no-changes`
-  on all pushes and pull requests
-- **Manual formatting**: Run `dotnet format` to format all files manually
-- **Formatting verification**: Use `dotnet format --verify-no-changes` to check
-  formatting without making changes
+- **Code formatting**: Enforces consistent style with
+  `dotnet format --verify-no-changes`
+- **Solution build**: Compiles the entire solution to catch build errors
+- **Unit tests**: Runs all tests to ensure functionality works correctly
+- **Manual commands**:
+  - `dotnet format` - Format all files manually
+  - `dotnet build` - Build the solution locally
+  - `dotnet test` - Run unit tests locally
 
-Pull requests will be blocked if formatting issues are found. Simply run
-`dotnet format` to fix any issues and push the changes.
+Pull requests will be blocked if any CI checks fail (formatting, build, or
+tests). Fix issues locally and push the changes to pass all checks.

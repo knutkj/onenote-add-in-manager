@@ -1,0 +1,51 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  ci:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Check code formatting
+        run: dotnet format --verify-no-changes --severity info --verbosity normal
+
+      - name: Format check failed
+        if: failure()
+        run: |
+          echo "❌ Code formatting check failed!"
+          echo "Please run 'dotnet format' to fix formatting issues."
+          echo "Then commit and push the changes."
+          exit 1
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Build failed
+        if: failure()
+        run: |
+          echo "❌ Solution build failed!"
+          echo "Please check the build errors above and fix them."
+          exit 1
+
+      - name: Run unit tests
+        run: dotnet test --configuration Release --no-build --logger trx --results-directory TestResults
+
+      - name: Tests failed
+        if: failure()
+        run: |
+          echo "❌ Unit tests failed!"
+          echo "Please check the test failures above and fix them."
+          exit 1

@@ -54,7 +54,7 @@ namespace OneNoteAddinManager.Test.ViewModels
             var viewModel = new DllInfoViewModel(_testFilePath, _mockFileSystem);
 
             Assert.AreEqual("✓ Yes", viewModel.FileExistsText);
-            Assert.AreEqual("20,0 B", viewModel.FileSizeText); // Accept comma as decimal separator for current culture
+            Assert.AreEqual("20.0 B", viewModel.FileSizeText); // Invariant culture uses period as decimal separator
             Assert.AreEqual("🔓 No", viewModel.FileLockedText);
             Assert.AreEqual(lastModified.ToString("yyyy-MM-dd HH:mm:ss"), viewModel.LastModifiedText);
         }
