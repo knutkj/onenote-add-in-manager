@@ -11,6 +11,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="System.Management" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.6" />
     <EmbeddedResource Include="Documentation\*.md" />
     <None Update="Documentation\*.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
