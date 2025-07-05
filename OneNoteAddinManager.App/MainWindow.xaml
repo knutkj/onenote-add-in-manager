@@ -12,6 +12,7 @@
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <local:EnableDisableConverter x:Key="EnableDisableConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
 
     <Grid>

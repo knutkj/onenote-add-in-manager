@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.IO.Abstractions" Version="22.0.14" />
+    <PackageReference Include="DotNetWindowsRegsitry" Version="0.1.0-alpha1" />
   </ItemGroup>
 
 </Project>

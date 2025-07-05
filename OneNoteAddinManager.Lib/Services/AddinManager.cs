@@ -10,26 +10,37 @@ namespace OneNoteAddinManager.Lib.Services
     [SupportedOSPlatform("windows")]
     public class AddinManager
     {
-        private readonly RegistryManager _registryManager;
+        private readonly IRegistryService _registryService;
 
-        public AddinManager()
+        /// <summary>
+        /// Initializes a new instance of the AddinManager with dependency injection.
+        /// </summary>
+        /// <param name="registryService">The registry service to use for registry operations</param>
+        public AddinManager(IRegistryService registryService)
         {
-            _registryManager = new RegistryManager();
+            _registryService = registryService ?? throw new ArgumentNullException(nameof(registryService));
+        }
+
+        /// <summary>
+        /// Default constructor that uses the Windows registry service.
+        /// </summary>
+        public AddinManager() : this(new RegistryService(new DotNetWindowsRegistry.WindowsRegistry()))
+        {
         }
 
         public List<AddinInfo> GetAllAddins()
         {
-            return _registryManager.GetInstalledAddins();
+            return _registryService.GetInstalledAddins();
         }
 
         public void EnableAddin(AddinInfo addin)
         {
-            _registryManager.SetAddinEnabled(addin, true);
+            _registryService.SetAddinEnabled(addin, true);
         }
 
         public void DisableAddin(AddinInfo addin)
         {
-            _registryManager.SetAddinEnabled(addin, false);
+            _registryService.SetAddinEnabled(addin, false);
         }
 
         public void RegisterNewAddin(string dllPath)
@@ -47,18 +58,17 @@ namespace OneNoteAddinManager.Lib.Services
             // Generate a new GUID for the add-in
             var guid = Guid.NewGuid().ToString("B").ToUpper();
 
-            _registryManager.RegisterAddin(fileName, friendlyName, description, dllPath, guid);
+            _registryService.RegisterAddin(fileName, friendlyName, description, dllPath, guid);
         }
 
         public void UnregisterAddin(AddinInfo addin)
         {
-            _registryManager.UnregisterAddin(addin);
+            _registryService.UnregisterAddin(addin);
         }
-
 
         public bool IsRunningAsAdministrator()
         {
-            return _registryManager.IsRunningAsAdministrator();
+            return _registryService.IsRunningAsAdministrator();
         }
 
         public List<AddinInfo> FindOrphanedEntries()

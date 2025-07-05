@@ -31,17 +31,33 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private readonly ObservableCollection<AddinInfo> _addins;
     private AddinInfo? _selectedAddin;
     
-    public ICommand ShowLoadBehaviorInfoCommand { get; private set; }
+    public ICommand ShowLoadBehaviorInfoCommand { get; private set; } = null!;
 
 
-    public MainWindow()
+    /// <summary>
+    /// Initializes a new instance of the MainWindow with dependency injection.
+    /// </summary>
+    /// <param name="addinManager">The add-in manager service</param>
+    public MainWindow(AddinManager addinManager)
     {
         Console.WriteLine("Starting MainWindow initialization...");
 
         // Initialize fields first
-        _addinManager = new AddinManager();
+        _addinManager = addinManager ?? throw new ArgumentNullException(nameof(addinManager));
         _addins = new ObservableCollection<AddinInfo>();
         
+        InitializeWindow();
+    }
+
+    /// <summary>
+    /// Default constructor for design-time support.
+    /// </summary>
+    public MainWindow() : this(new AddinManager())
+    {
+    }
+
+    private void InitializeWindow()
+    {
         // Initialize commands
         ShowLoadBehaviorInfoCommand = new RelayCommand<string>(ShowLoadBehaviorInfo);
 
