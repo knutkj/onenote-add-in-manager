@@ -15,8 +15,8 @@ public class AddinInfoTests
         var addin = new AddinInfo();
         var eventRaised = false;
         var propertyName = string.Empty;
-        
-        addin.PropertyChanged += (sender, e) => 
+
+        addin.PropertyChanged += (sender, e) =>
         {
             eventRaised = true;
             propertyName = e.PropertyName;
@@ -38,8 +38,8 @@ public class AddinInfoTests
         var addin = new AddinInfo();
         var eventRaised = false;
         var propertyName = string.Empty;
-        
-        addin.PropertyChanged += (sender, e) => 
+
+        addin.PropertyChanged += (sender, e) =>
         {
             eventRaised = true;
             propertyName = e.PropertyName;
@@ -61,8 +61,8 @@ public class AddinInfoTests
         var addin = new AddinInfo();
         var eventRaised = false;
         var propertyName = string.Empty;
-        
-        addin.PropertyChanged += (sender, e) => 
+
+        addin.PropertyChanged += (sender, e) =>
         {
             eventRaised = true;
             propertyName = e.PropertyName;
@@ -84,8 +84,8 @@ public class AddinInfoTests
         var addin = new AddinInfo();
         var eventRaised = false;
         var propertyName = string.Empty;
-        
-        addin.PropertyChanged += (sender, e) => 
+
+        addin.PropertyChanged += (sender, e) =>
         {
             eventRaised = true;
             propertyName = e.PropertyName;
@@ -107,8 +107,8 @@ public class AddinInfoTests
         var addin = new AddinInfo();
         var eventRaised = false;
         var propertyName = string.Empty;
-        
-        addin.PropertyChanged += (sender, e) => 
+
+        addin.PropertyChanged += (sender, e) =>
         {
             eventRaised = true;
             propertyName = e.PropertyName;
@@ -130,8 +130,8 @@ public class AddinInfoTests
         var addin = new AddinInfo();
         var eventRaised = false;
         var propertyName = string.Empty;
-        
-        addin.PropertyChanged += (sender, e) => 
+
+        addin.PropertyChanged += (sender, e) =>
         {
             eventRaised = true;
             propertyName = e.PropertyName;
@@ -153,8 +153,8 @@ public class AddinInfoTests
         var addin = new AddinInfo();
         var eventRaised = false;
         var propertyName = string.Empty;
-        
-        addin.PropertyChanged += (sender, e) => 
+
+        addin.PropertyChanged += (sender, e) =>
         {
             eventRaised = true;
             propertyName = e.PropertyName;
@@ -173,10 +173,11 @@ public class AddinInfoTests
     public void Status_WhenEnabled_ReturnsEnabled()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.IsEnabled = true;
+        var addin = new AddinInfo
+        {
+            // Act
+            IsEnabled = true
+        };
 
         // Assert
         Assert.AreEqual("Enabled", addin.Status);
@@ -186,10 +187,11 @@ public class AddinInfoTests
     public void Status_WhenDisabled_ReturnsDisabled()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.IsEnabled = false;
+        var addin = new AddinInfo
+        {
+            // Act
+            IsEnabled = false
+        };
 
         // Assert
         Assert.AreEqual("Disabled", addin.Status);
@@ -199,13 +201,14 @@ public class AddinInfoTests
     public void OfficeAddinRegistryPath_WithName_ReturnsCorrectPath()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.Name = "TestAddin";
+        var addin = new AddinInfo
+        {
+            // Act
+            Name = "TestAddin"
+        };
 
         // Assert
-        Assert.AreEqual(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\OneNote\AddIns\TestAddin", 
+        Assert.AreEqual(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\OneNote\AddIns\TestAddin",
                        addin.OfficeAddinRegistryPath);
     }
 
@@ -213,13 +216,14 @@ public class AddinInfoTests
     public void AppIdRegistryPath_WithGuid_ReturnsCorrectPath()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.Guid = "{12345678-1234-1234-1234-123456789ABC}";
+        var addin = new AddinInfo
+        {
+            // Act
+            Guid = "{12345678-1234-1234-1234-123456789ABC}"
+        };
 
         // Assert
-        Assert.AreEqual(@"HKEY_CLASSES_ROOT\AppID\{12345678-1234-1234-1234-123456789ABC}", 
+        Assert.AreEqual(@"HKEY_CLASSES_ROOT\AppID\{12345678-1234-1234-1234-123456789ABC}",
                        addin.AppIdRegistryPath);
     }
 
@@ -228,7 +232,7 @@ public class AddinInfoTests
     {
         // Arrange
         var addin = new AddinInfo();
-        
+
         // Act & Assert
         Assert.AreEqual("Not Available", addin.AppIdRegistryPath);
     }
@@ -237,13 +241,14 @@ public class AddinInfoTests
     public void ClsidRegistryPath_WithGuid_ReturnsCorrectPath()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.Guid = "{12345678-1234-1234-1234-123456789ABC}";
+        var addin = new AddinInfo
+        {
+            // Act
+            Guid = "{12345678-1234-1234-1234-123456789ABC}"
+        };
 
         // Assert
-        Assert.AreEqual(@"HKEY_CLASSES_ROOT\CLSID\{12345678-1234-1234-1234-123456789ABC}", 
+        Assert.AreEqual(@"HKEY_CLASSES_ROOT\CLSID\{12345678-1234-1234-1234-123456789ABC}",
                        addin.ClsidRegistryPath);
     }
 
@@ -252,7 +257,7 @@ public class AddinInfoTests
     {
         // Arrange
         var addin = new AddinInfo();
-        
+
         // Act & Assert
         Assert.AreEqual("Not Available", addin.ClsidRegistryPath);
     }
@@ -261,10 +266,11 @@ public class AddinInfoTests
     public void ProgIdRegistryPath_WithName_ReturnsCorrectPath()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.Name = "TestAddin";
+        var addin = new AddinInfo
+        {
+            // Act
+            Name = "TestAddin"
+        };
 
         // Assert
         Assert.AreEqual(@"HKEY_CLASSES_ROOT\TestAddin", addin.ProgIdRegistryPath);
@@ -274,10 +280,11 @@ public class AddinInfoTests
     public void ComClassName_WithName_ReturnsCorrectClassName()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.Name = "TestAddin";
+        var addin = new AddinInfo
+        {
+            // Act
+            Name = "TestAddin"
+        };
 
         // Assert
         Assert.AreEqual("TestAddin.AddIn", addin.ComClassName);
@@ -287,10 +294,11 @@ public class AddinInfoTests
     public void LoadBehaviorExplanation_LoadBehavior0_ReturnsDisabled()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.LoadBehavior = 0;
+        var addin = new AddinInfo
+        {
+            // Act
+            LoadBehavior = 0
+        };
 
         // Assert
         Assert.AreEqual("Disabled - Add-in is not loaded", addin.LoadBehaviorExplanation);
@@ -300,10 +308,11 @@ public class AddinInfoTests
     public void LoadBehaviorExplanation_LoadBehavior1_ReturnsLoadedOnce()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.LoadBehavior = 1;
+        var addin = new AddinInfo
+        {
+            // Act
+            LoadBehavior = 1
+        };
 
         // Assert
         Assert.AreEqual("Loaded once - Add-in is loaded only on demand", addin.LoadBehaviorExplanation);
@@ -313,10 +322,11 @@ public class AddinInfoTests
     public void LoadBehaviorExplanation_LoadBehavior2_ReturnsLoadedAtStartup()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.LoadBehavior = 2;
+        var addin = new AddinInfo
+        {
+            // Act
+            LoadBehavior = 2
+        };
 
         // Assert
         Assert.AreEqual("Loaded at startup - Add-in is loaded when the application starts", addin.LoadBehaviorExplanation);
@@ -326,10 +336,11 @@ public class AddinInfoTests
     public void LoadBehaviorExplanation_LoadBehavior3_ReturnsLoadedAtStartupAndOnDemand()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.LoadBehavior = 3;
+        var addin = new AddinInfo
+        {
+            // Act
+            LoadBehavior = 3
+        };
 
         // Assert
         Assert.AreEqual("Loaded at startup and on demand - Add-in is loaded at startup and remains loaded", addin.LoadBehaviorExplanation);
@@ -339,10 +350,11 @@ public class AddinInfoTests
     public void LoadBehaviorExplanation_LoadBehavior8_ReturnsConnectedOnDemand()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.LoadBehavior = 8;
+        var addin = new AddinInfo
+        {
+            // Act
+            LoadBehavior = 8
+        };
 
         // Assert
         Assert.AreEqual("Connected on demand - Add-in is loaded only when requested by the user", addin.LoadBehaviorExplanation);
@@ -352,10 +364,11 @@ public class AddinInfoTests
     public void LoadBehaviorExplanation_LoadBehavior9_ReturnsConnectedAtStartup()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.LoadBehavior = 9;
+        var addin = new AddinInfo
+        {
+            // Act
+            LoadBehavior = 9
+        };
 
         // Assert
         Assert.AreEqual("Connected at startup - Add-in is loaded at startup and connected", addin.LoadBehaviorExplanation);
@@ -365,10 +378,11 @@ public class AddinInfoTests
     public void LoadBehaviorExplanation_LoadBehavior16_ReturnsConnectedWithFirstDocument()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.LoadBehavior = 16;
+        var addin = new AddinInfo
+        {
+            // Act
+            LoadBehavior = 16
+        };
 
         // Assert
         Assert.AreEqual("Connected with first document - Add-in is loaded when the first document is opened", addin.LoadBehaviorExplanation);
@@ -378,10 +392,11 @@ public class AddinInfoTests
     public void LoadBehaviorExplanation_UnknownBehavior_ReturnsUnknownWithValue()
     {
         // Arrange
-        var addin = new AddinInfo();
-        
-        // Act
-        addin.LoadBehavior = 999;
+        var addin = new AddinInfo
+        {
+            // Act
+            LoadBehavior = 999
+        };
 
         // Assert
         Assert.AreEqual("Unknown behavior (999)", addin.LoadBehaviorExplanation);
@@ -391,7 +406,7 @@ public class AddinInfoTests
     public void RegistryKeys_WithCompleteInformation_ReturnsAllKeys()
     {
         // Arrange
-        var addin = new AddinInfo 
+        var addin = new AddinInfo
         {
             Name = "TestAddin",
             FriendlyName = "Test Add-in",
@@ -406,22 +421,22 @@ public class AddinInfoTests
 
         // Assert
         Assert.AreEqual(7, keys.Count);
-        
+
         // Check Office Add-in Registration key
         var officeKey = keys.FirstOrDefault(k => k.Purpose == "Office Add-in Registration");
         Assert.IsNotNull(officeKey);
         Assert.AreEqual(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\OneNote\AddIns\TestAddin", officeKey.Path);
-        
+
         // Check AppID key
         var appIdKey = keys.FirstOrDefault(k => k.Purpose == "AppID Registration");
         Assert.IsNotNull(appIdKey);
         Assert.AreEqual(@"HKEY_CLASSES_ROOT\AppID\{12345678-1234-1234-1234-123456789ABC}", appIdKey.Path);
-        
+
         // Check CLSID key
         var clsidKey = keys.FirstOrDefault(k => k.Purpose == "CLSID Registration");
         Assert.IsNotNull(clsidKey);
         Assert.AreEqual(@"HKEY_CLASSES_ROOT\CLSID\{12345678-1234-1234-1234-123456789ABC}", clsidKey.Path);
-        
+
         // Check ProgID key
         var progIdKey = keys.FirstOrDefault(k => k.Purpose == "ProgID Class Registration");
         Assert.IsNotNull(progIdKey);
@@ -432,7 +447,7 @@ public class AddinInfoTests
     public void RegistryKeys_WithoutGuid_ReturnsLimitedKeys()
     {
         // Arrange
-        var addin = new AddinInfo 
+        var addin = new AddinInfo
         {
             Name = "TestAddin",
             FriendlyName = "Test Add-in",
@@ -445,14 +460,14 @@ public class AddinInfoTests
 
         // Assert
         Assert.AreEqual(2, keys.Count);
-        
+
         // Should have Office Add-in Registration and ProgID Class Registration only
         var officeKey = keys.FirstOrDefault(k => k.Purpose == "Office Add-in Registration");
         Assert.IsNotNull(officeKey);
-        
+
         var progIdKey = keys.FirstOrDefault(k => k.Purpose == "ProgID Class Registration");
         Assert.IsNotNull(progIdKey);
-        
+
         // Should not have GUID-dependent keys
         Assert.IsFalse(keys.Any(k => k.Purpose == "AppID Registration"));
         Assert.IsFalse(keys.Any(k => k.Purpose == "CLSID Registration"));

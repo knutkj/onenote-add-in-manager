@@ -1,19 +1,20 @@
+using OneNoteAddinManager.Lib.Models;
+using OneNoteAddinManager.Lib.Services;
 using System;
+using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
-using OneNoteAddinManager.Lib.Models;
-using OneNoteAddinManager.Lib.Services;
 
 namespace OneNoteAddinManager.App.ViewModels
 {
     /// <summary>
     /// ViewModel for Add-in information - contains ALL presentation logic
     /// </summary>
-    public class AddInInfoViewModel : INotifyPropertyChanged, IDisposable
+    public class AddInInfoViewModel : INotifyPropertyChanged
     {
         private readonly AddinInfo? _addinInfo;
         private readonly string? _registryPath;
@@ -21,7 +22,7 @@ namespace OneNoteAddinManager.App.ViewModels
         public AddInInfoViewModel(string? registryPath)
         {
             _registryPath = registryPath;
-            
+
             // Load add-in information from registry path if provided
             if (!string.IsNullOrEmpty(registryPath))
             {
@@ -32,7 +33,7 @@ namespace OneNoteAddinManager.App.ViewModels
                     if (!string.IsNullOrEmpty(addinName))
                     {
                         var registryManager = new RegistryManager();
-                        var addins = registryManager.GetInstalledAddins();
+                        var addins = RegistryManager.GetInstalledAddins();
                         _addinInfo = addins.Find(a => a.Name.Equals(addinName, StringComparison.OrdinalIgnoreCase));
                     }
                 }
@@ -41,7 +42,7 @@ namespace OneNoteAddinManager.App.ViewModels
                     // If we can't load the add-in info, _addinInfo remains null
                 }
             }
-            
+
             // Initialize commands
             OpenDllFolderCommand = new RelayCommand(OpenDllFolder, () => CanOpenDllFolder);
             OpenRegistryEditorCommand = new RelayCommand(OpenRegistryEditor, () => HasValidRegistryPath);
@@ -49,11 +50,11 @@ namespace OneNoteAddinManager.App.ViewModels
             ShowInfoCommand = new RelayCommand<string>(ShowInfo);
         }
 
-        private string? ExtractAddinNameFromPath(string registryPath)
+        private static string? ExtractAddinNameFromPath(string registryPath)
         {
             // Extract add-in name from path like "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\OneNote\AddIns\MyAddin"
             var parts = registryPath.Split('\\');
-            return parts.Length > 0 ? parts[parts.Length - 1] : null;
+            return parts.Length > 0 ? parts[^1] : null;
         }
 
         // Properties for display
@@ -162,11 +163,6 @@ namespace OneNoteAddinManager.App.ViewModels
         // Event for requesting documentation
         public event EventHandler<InfoRequestedEventArgs>? InfoRequested;
 
-        public void Dispose()
-        {
-            // No resources to dispose in this implementation
-        }
-
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -176,27 +172,15 @@ namespace OneNoteAddinManager.App.ViewModels
     }
 
     // Event args for info requests
-    public class InfoRequestedEventArgs : EventArgs
+    public class InfoRequestedEventArgs(string fieldName) : EventArgs
     {
-        public string FieldName { get; }
-
-        public InfoRequestedEventArgs(string fieldName)
-        {
-            FieldName = fieldName;
-        }
+        public string FieldName => fieldName;
     }
 
     // Simple RelayCommand implementation
-    public class RelayCommand : ICommand
+    public class RelayCommand(Action execute, Func<bool>? canExecute = null) : ICommand
     {
-        private readonly Action _execute;
-        private readonly Func<bool>? _canExecute;
-
-        public RelayCommand(Action execute, Func<bool>? canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
+        private readonly Action _execute = execute ?? throw new ArgumentNullException(nameof(execute));
 
         public event EventHandler? CanExecuteChanged
         {
@@ -204,22 +188,15 @@ namespace OneNoteAddinManager.App.ViewModels
             remove => CommandManager.RequerySuggested -= value;
         }
 
-        public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
+        public bool CanExecute(object? parameter) => canExecute?.Invoke() ?? true;
 
         public void Execute(object? parameter) => _execute();
     }
 
     // RelayCommand with parameter
-    public class RelayCommand<T> : ICommand
+    public class RelayCommand<T>(Action<T> execute, Func<T, bool>? canExecute = null) : ICommand
     {
-        private readonly Action<T> _execute;
-        private readonly Func<T, bool>? _canExecute;
-
-        public RelayCommand(Action<T> execute, Func<T, bool>? canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
+        private readonly Action<T> _execute = execute ?? throw new ArgumentNullException(nameof(execute));
 
         public event EventHandler? CanExecuteChanged
         {
@@ -230,7 +207,7 @@ namespace OneNoteAddinManager.App.ViewModels
         public bool CanExecute(object? parameter)
         {
             if (parameter is T typedParameter)
-                return _canExecute?.Invoke(typedParameter) ?? true;
+                return canExecute?.Invoke(typedParameter) ?? true;
             return false;
         }
 

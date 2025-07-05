@@ -13,7 +13,7 @@ namespace OneNoteAddinManager.App.Controls
 
         public event EventHandler<string>? DocumentChanged;
 
-        private DocumentationViewerViewModel _viewModel;
+        private readonly DocumentationViewerViewModel _viewModel;
 
         public DocumentationViewerControl()
         {

@@ -1,0 +1,46 @@
+﻿[*.cs]
+
+# CA1822: Mark members as static
+dotnet_diagnostic.CA1822.severity = error
+
+# IDE0090: Use 'new(...)'
+dotnet_diagnostic.IDE0090.severity = error
+
+# IDE0028: Simplify collection initialization
+dotnet_diagnostic.IDE0028.severity = error
+
+# IDE0063: Use simple 'using' statement
+dotnet_diagnostic.IDE0063.severity = none
+
+# IDE0060: Remove unused parameter
+dotnet_diagnostic.IDE0060.severity = error
+
+# IDE0056: Use index operator
+dotnet_diagnostic.IDE0056.severity = error
+
+# IDE0057: Use range operator
+dotnet_diagnostic.IDE0057.severity = error
+
+# CA1834: Consider using 'StringBuilder.Append(char)' when applicable
+dotnet_diagnostic.CA1834.severity = error
+
+# IDE0300: Simplify collection initialization
+dotnet_diagnostic.IDE0300.severity = error
+
+# CA1860: Avoid using 'Enumerable.Any()' extension method
+dotnet_diagnostic.CA1860.severity = error
+
+# IDE0017: Simplify object initialization
+dotnet_diagnostic.IDE0017.severity = error
+
+# MSTEST0039: Use newer methods to assert exceptions
+dotnet_diagnostic.MSTEST0039.severity = error
+
+# IDE0044: Add readonly modifier
+dotnet_diagnostic.IDE0044.severity = error
+
+# IDE0290: Use primary constructor
+dotnet_diagnostic.IDE0290.severity = error
+
+# CA1816: Call GC.SuppressFinalize correctly
+dotnet_diagnostic.CA1816.severity = error

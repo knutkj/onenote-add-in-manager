@@ -16,14 +16,14 @@ namespace OneNoteAddinManager.App.Controls
         public OneNoteControl()
         {
             InitializeComponent();
-            
+
             // Create and set the ViewModel
             _viewModel = new OneNoteViewModel();
             this.DataContext = _viewModel;
-            
+
             // Forward ViewModel events to the parent
             _viewModel.StatusChanged += OnStatusChanged;
-            
+
             // Clean up ViewModel when control is unloaded
             this.Unloaded += OneNoteControl_Unloaded;
         }

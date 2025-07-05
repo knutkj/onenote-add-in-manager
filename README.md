@@ -1,5 +1,7 @@
 # OneNote Add-In Manager
 
+[![Code Formatting Check](https://github.com/knutkj/onenote-add-in-manager/actions/workflows/format-check.yml/badge.svg)](https://github.com/knutkj/onenote-add-in-manager/actions/workflows/format-check.yml)
+
 OneNote Add-In Manager is a Windows Presentation Foundation (WPF) based
 application for Windows that explains and manages the Windows Registry entries
 required for Microsoft OneNote add-ins to load and work correctly.
@@ -52,3 +54,18 @@ learn as they explore.
 - IT administrators deploying or troubleshooting add-ins.
 - Anyone wanting to learn about how OneNote integrates with the Windows Registry
   and COM.
+
+## Development
+
+### Code Formatting
+
+This project uses automated code formatting to maintain consistent style:
+
+- **Automatic checks**: GitHub Actions runs `dotnet format --verify-no-changes`
+  on all pushes and pull requests
+- **Manual formatting**: Run `dotnet format` to format all files manually
+- **Formatting verification**: Use `dotnet format --verify-no-changes` to check
+  formatting without making changes
+
+Pull requests will be blocked if formatting issues are found. Simply run
+`dotnet format` to fix any issues and push the changes.

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using OneNoteAddinManager.Lib.Models;
 using System.Runtime.Versioning;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OneNoteAddinManager.Lib.Services
 {
@@ -16,6 +17,7 @@ namespace OneNoteAddinManager.Lib.Services
         /// Initializes a new instance of the AddinManager with dependency injection.
         /// </summary>
         /// <param name="registryService">The registry service to use for registry operations</param>
+        [SuppressMessage("Style", "IDE0290")]
         public AddinManager(IRegistryService registryService)
         {
             _registryService = registryService ?? throw new ArgumentNullException(nameof(registryService));
@@ -74,7 +76,7 @@ namespace OneNoteAddinManager.Lib.Services
         public List<AddinInfo> FindOrphanedEntries()
         {
             var addins = GetAllAddins();
-            return addins.Where(a => !string.IsNullOrEmpty(a.DllPath) && !File.Exists(a.DllPath)).ToList();
+            return [.. addins.Where(a => !string.IsNullOrEmpty(a.DllPath) && !File.Exists(a.DllPath))];
         }
 
         public void CleanupOrphanedEntries()

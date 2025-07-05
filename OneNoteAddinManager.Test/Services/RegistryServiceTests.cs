@@ -53,7 +53,7 @@ public class RegistryServiceTests
         // Assert
         Assert.IsNotNull(addins);
         Assert.AreEqual(1, addins.Count);
-        
+
         var retrievedAddin = addins.First();
         Assert.AreEqual("TestAddin", retrievedAddin.Name);
         Assert.AreEqual("Test Add-in", retrievedAddin.FriendlyName);
@@ -87,7 +87,7 @@ public class RegistryServiceTests
         // Assert
         Assert.AreEqual(3, testAddin.LoadBehavior);
         Assert.IsTrue(testAddin.IsEnabled);
-        
+
         // Verify it persists in registry
         var addins = _registryService.GetInstalledAddins();
         var retrievedAddin = addins.First(a => a.Name == "TestAddin");
@@ -118,7 +118,7 @@ public class RegistryServiceTests
         // Assert
         Assert.AreEqual(0, testAddin.LoadBehavior);
         Assert.IsFalse(testAddin.IsEnabled);
-        
+
         // Verify it persists in registry
         var addins = _registryService.GetInstalledAddins();
         var retrievedAddin = addins.First(a => a.Name == "TestAddin");
@@ -140,7 +140,7 @@ public class RegistryServiceTests
         // Assert
         var addins = _registryService.GetInstalledAddins();
         Assert.AreEqual(1, addins.Count);
-        
+
         var addin = addins.First();
         Assert.AreEqual("MyNewAddin", addin.Name);
         Assert.AreEqual("My New Add-in", addin.FriendlyName);
@@ -167,7 +167,7 @@ public class RegistryServiceTests
         };
 
         RegistryTestHelper.SetupTestData(_inMemoryRegistry, testAddin);
-        
+
         // Verify it exists
         var addinsBefore = _registryService.GetInstalledAddins();
         Assert.AreEqual(1, addinsBefore.Count);
@@ -207,9 +207,9 @@ public class RegistryServiceTests
         };
 
         // Act & Assert
-        var exception = Assert.ThrowsException<InvalidOperationException>(
+        var exception = Assert.ThrowsExactly<InvalidOperationException>(
             () => _registryService.SetAddinEnabled(nonExistentAddin, true));
-        
+
         Assert.IsTrue(exception.Message.Contains("Add-in registry key not found"));
     }
 
@@ -242,10 +242,10 @@ public class RegistryServiceTests
 
         // Assert
         Assert.AreEqual(2, addins.Count);
-        
+
         var retrievedAddin1 = addins.First(a => a.Name == "Addin1");
         Assert.IsTrue(retrievedAddin1.IsEnabled);
-        
+
         var retrievedAddin2 = addins.First(a => a.Name == "Addin2");
         Assert.IsFalse(retrievedAddin2.IsEnabled);
     }

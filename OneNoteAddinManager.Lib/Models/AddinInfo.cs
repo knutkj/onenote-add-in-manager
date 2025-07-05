@@ -92,13 +92,13 @@ namespace OneNoteAddinManager.Lib.Models
         public string AppIdRegistryPath => !string.IsNullOrEmpty(Guid) ? $@"HKEY_CLASSES_ROOT\AppID\{Guid}" : "Not Available";
         public string ClsidRegistryPath => !string.IsNullOrEmpty(Guid) ? $@"HKEY_CLASSES_ROOT\CLSID\{Guid}" : "Not Available";
         public string ProgIdRegistryPath => $@"HKEY_CLASSES_ROOT\{Name}";
-        
+
         // COM information
         public string ComClassName => $"{Name}.AddIn";
-        public string ThreadingModel => "Both";
-        public string RuntimeVersion => "v4.0.30319";
-        public string InprocServer => "mscoree.dll";
-        
+        public static string ThreadingModel => "Both";
+        public static string RuntimeVersion => "v4.0.30319";
+        public static string InprocServer => "mscoree.dll";
+
         // LoadBehavior explanations
         public string LoadBehaviorExplanation => LoadBehavior switch
         {
@@ -119,8 +119,7 @@ namespace OneNoteAddinManager.Lib.Models
             {
                 var keys = new List<RegistryKeyInfo>
                 {
-                    new RegistryKeyInfo
-                    {
+                    new() {
                         Path = OfficeAddinRegistryPath,
                         Purpose = "Office Add-in Registration",
                         Description = "Registers the add-in with OneNote. Contains LoadBehavior, FriendlyName, and Description.",
@@ -218,11 +217,12 @@ namespace OneNoteAddinManager.Lib.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }    public class RegistryKeyInfo
+    }
+    public class RegistryKeyInfo
     {
         public string Path { get; set; } = string.Empty;
         public string Purpose { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Values { get; set; } = [];
     }
 }

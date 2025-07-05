@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 namespace OneNoteAddinManager.App.ViewModels
 {
-    public class DocumentationViewerViewModel : INotifyPropertyChanged, IDisposable
+    public sealed class DocumentationViewerViewModel : INotifyPropertyChanged, IDisposable
     {
         private string? _currentDocumentId;
         private ObservableCollection<UIElement> _markdownContent;
@@ -21,7 +21,7 @@ namespace OneNoteAddinManager.App.ViewModels
 
         public DocumentationViewerViewModel()
         {
-            _markdownContent = new ObservableCollection<UIElement>();
+            _markdownContent = [];
         }
 
         public string? CurrentDocumentId
@@ -136,7 +136,7 @@ namespace OneNoteAddinManager.App.ViewModels
                         currentParagraph.Clear();
                     }
 
-                    AddHeader1(trimmedLine.Substring(2));
+                    AddHeader1(trimmedLine[2..]);
                     continue;
                 }
 
@@ -148,7 +148,7 @@ namespace OneNoteAddinManager.App.ViewModels
                         currentParagraph.Clear();
                     }
 
-                    AddHeader2(trimmedLine.Substring(3));
+                    AddHeader2(trimmedLine[3..]);
                     continue;
                 }
 
@@ -160,7 +160,7 @@ namespace OneNoteAddinManager.App.ViewModels
                         currentParagraph.Clear();
                     }
 
-                    AddHeader3(trimmedLine.Substring(4));
+                    AddHeader3(trimmedLine[4..]);
                     continue;
                 }
 
@@ -173,7 +173,7 @@ namespace OneNoteAddinManager.App.ViewModels
                         currentParagraph.Clear();
                     }
 
-                    AddListItem(trimmedLine.Substring(2));
+                    AddListItem(trimmedLine[2..]);
                     continue;
                 }
 
@@ -186,7 +186,7 @@ namespace OneNoteAddinManager.App.ViewModels
                 // Regular paragraph text
                 if (currentParagraph.Length > 0)
                 {
-                    currentParagraph.Append(" ");
+                    currentParagraph.Append(' ');
                 }
                 currentParagraph.Append(ProcessBoldText(trimmedLine));
             }
@@ -272,15 +272,15 @@ namespace OneNoteAddinManager.App.ViewModels
             MarkdownContent.Add(textBlock);
         }
 
-        private string ProcessBoldText(string text)
+        private static string ProcessBoldText(string text)
         {
             // Simple bold removal for plain text scenarios
             return text.Replace("**", "");
         }
 
-        private void ProcessBoldInlines(TextBlock textBlock, string text)
+        private static void ProcessBoldInlines(TextBlock textBlock, string text)
         {
-            var parts = text.Split(new[] { "**" }, StringSplitOptions.None);
+            var parts = text.Split(["**"], StringSplitOptions.None);
             bool isBold = false;
 
             foreach (var part in parts)
@@ -302,7 +302,7 @@ namespace OneNoteAddinManager.App.ViewModels
             }
         }
 
-        protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
+        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

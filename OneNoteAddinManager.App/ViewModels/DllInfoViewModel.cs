@@ -312,11 +312,9 @@ namespace OneNoteAddinManager.App.ViewModels
             {
                 if (_loadedAssembly != null)
                 {
-                    var targetFrameworkAttribute = _loadedAssembly
+                    if (_loadedAssembly
                         .GetCustomAttributes(typeof(System.Runtime.Versioning.TargetFrameworkAttribute), false)
-                        .FirstOrDefault() as System.Runtime.Versioning.TargetFrameworkAttribute;
-
-                    if (targetFrameworkAttribute != null)
+                        .FirstOrDefault() is System.Runtime.Versioning.TargetFrameworkAttribute targetFrameworkAttribute)
                     {
                         return targetFrameworkAttribute.FrameworkName;
                     }
@@ -379,11 +377,11 @@ namespace OneNoteAddinManager.App.ViewModels
                         }
                     }
 
-                    if (relevantInterfaces.Any())
+                    if (relevantInterfaces.Count != 0)
                     {
                         return $"Office/OneNote: {string.Join(", ", relevantInterfaces)}";
                     }
-                    else if (commonInterfaces.Any())
+                    else if (commonInterfaces.Count != 0)
                     {
                         return $"COM: {string.Join(", ", commonInterfaces)}";
                     }
@@ -452,10 +450,9 @@ namespace OneNoteAddinManager.App.ViewModels
                 var comVisibleValues = new List<string>();
 
                 // Check assembly-level ComVisible attribute
-                var assemblyComVisible = _loadedAssembly.GetCustomAttributes(typeof(System.Runtime.InteropServices.ComVisibleAttribute), false)
-                    .FirstOrDefault() as System.Runtime.InteropServices.ComVisibleAttribute;
 
-                if (assemblyComVisible != null)
+                if (_loadedAssembly.GetCustomAttributes(typeof(System.Runtime.InteropServices.ComVisibleAttribute), false)
+                    .FirstOrDefault() is System.Runtime.InteropServices.ComVisibleAttribute assemblyComVisible)
                 {
                     comVisibleValues.Add($"Assembly: {assemblyComVisible.Value}");
                 }
@@ -466,21 +463,19 @@ namespace OneNoteAddinManager.App.ViewModels
 
                 foreach (var type in types)
                 {
-                    var typeComVisibleAttr = type.GetCustomAttributes(typeof(System.Runtime.InteropServices.ComVisibleAttribute), false)
-                        .FirstOrDefault() as System.Runtime.InteropServices.ComVisibleAttribute;
-
-                    if (typeComVisibleAttr != null)
+                    if (type.GetCustomAttributes(typeof(System.Runtime.InteropServices.ComVisibleAttribute), false)
+                        .FirstOrDefault() is System.Runtime.InteropServices.ComVisibleAttribute typeComVisibleAttr)
                     {
                         typeComVisible.Add($"{type.Name}: {typeComVisibleAttr.Value}");
                     }
                 }
 
-                if (typeComVisible.Any())
+                if (typeComVisible.Count != 0)
                 {
                     comVisibleValues.Add($"Types: {string.Join(", ", typeComVisible)}");
                 }
 
-                return comVisibleValues.Any() ? string.Join("; ", comVisibleValues) : "Not specified";
+                return comVisibleValues.Count != 0 ? string.Join("; ", comVisibleValues) : "Not specified";
             }
             catch (Exception ex)
             {
@@ -498,10 +493,9 @@ namespace OneNoteAddinManager.App.ViewModels
                 var guids = new List<string>();
 
                 // Check assembly-level GUID attribute
-                var assemblyGuid = _loadedAssembly.GetCustomAttributes(typeof(System.Runtime.InteropServices.GuidAttribute), false)
-                    .FirstOrDefault() as System.Runtime.InteropServices.GuidAttribute;
 
-                if (assemblyGuid != null)
+                if (_loadedAssembly.GetCustomAttributes(typeof(System.Runtime.InteropServices.GuidAttribute), false)
+                    .FirstOrDefault() is System.Runtime.InteropServices.GuidAttribute assemblyGuid)
                 {
                     guids.Add($"Assembly: {assemblyGuid.Value}");
                 }
@@ -512,21 +506,19 @@ namespace OneNoteAddinManager.App.ViewModels
 
                 foreach (var type in types)
                 {
-                    var typeGuidAttr = type.GetCustomAttributes(typeof(System.Runtime.InteropServices.GuidAttribute), false)
-                        .FirstOrDefault() as System.Runtime.InteropServices.GuidAttribute;
-
-                    if (typeGuidAttr != null)
+                    if (type.GetCustomAttributes(typeof(System.Runtime.InteropServices.GuidAttribute), false)
+                        .FirstOrDefault() is System.Runtime.InteropServices.GuidAttribute typeGuidAttr)
                     {
                         typeGuids.Add($"{type.Name}: {typeGuidAttr.Value}");
                     }
                 }
 
-                if (typeGuids.Any())
+                if (typeGuids.Count != 0)
                 {
                     guids.Add($"Types: {string.Join(", ", typeGuids)}");
                 }
 
-                return guids.Any() ? string.Join("; ", guids) : "Not specified";
+                return guids.Count != 0 ? string.Join("; ", guids) : "Not specified";
             }
             catch (Exception ex)
             {
@@ -548,16 +540,14 @@ namespace OneNoteAddinManager.App.ViewModels
 
                 foreach (var type in types)
                 {
-                    var progIdAttr = type.GetCustomAttributes(typeof(System.Runtime.InteropServices.ProgIdAttribute), false)
-                        .FirstOrDefault() as System.Runtime.InteropServices.ProgIdAttribute;
-
-                    if (progIdAttr != null)
+                    if (type.GetCustomAttributes(typeof(System.Runtime.InteropServices.ProgIdAttribute), false)
+                        .FirstOrDefault() is System.Runtime.InteropServices.ProgIdAttribute progIdAttr)
                     {
                         progIds.Add($"{type.Name}: {progIdAttr.Value}");
                     }
                 }
 
-                return progIds.Any() ? string.Join(", ", progIds) : "Not specified";
+                return progIds.Count != 0 ? string.Join(", ", progIds) : "Not specified";
             }
             catch (Exception ex)
             {
@@ -616,9 +606,9 @@ namespace OneNoteAddinManager.App.ViewModels
             }
         }
 
-        private string FormatFileSize(long bytes)
+        private static string FormatFileSize(long bytes)
         {
-            string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
+            string[] suffixes = ["B", "KB", "MB", "GB", "TB"];
             int counter = 0;
             decimal number = bytes;
             while (Math.Round(number / 1024) >= 1)

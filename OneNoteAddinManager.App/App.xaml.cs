@@ -25,13 +25,13 @@ public partial class App : Application
             {
                 // Register the Windows registry implementation
                 services.AddSingleton<DotNetWindowsRegistry.IRegistry, DotNetWindowsRegistry.WindowsRegistry>();
-                
+
                 // Register registry service
                 services.AddSingleton<IRegistryService, RegistryService>();
-                
+
                 // Register other services
                 services.AddSingleton<AddinManager>();
-                
+
                 // Register the main window
                 services.AddSingleton<MainWindow>();
             })
