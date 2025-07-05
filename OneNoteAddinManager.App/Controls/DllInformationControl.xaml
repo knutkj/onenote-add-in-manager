@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="600">
+             d:DesignHeight="300" d:DesignWidth="600">
     <Border Background="#F8F8F8" 
             Padding="15" 
             CornerRadius="5"
@@ -12,11 +12,19 @@
             BorderThickness="1">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="140"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -40,6 +48,39 @@
             
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Last Modified:" FontWeight="Bold"/>
             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LastModifiedText}"/>
+            
+            <!-- Assembly Information Section -->
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Assembly Version:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding AssemblyVersionText}"/>
+            
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="File Version:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding FileVersionText}"/>
+            
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Target Framework:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding TargetFrameworkText}"/>
+            
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Architecture:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding AssemblyArchitectureText}"/>
+            
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Company:" FontWeight="Bold"/>
+            <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding CompanyText}"/>
+            
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Interfaces:" FontWeight="Bold" VerticalAlignment="Top"/>
+            <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding ImplementedInterfacesText}" 
+                       TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,0,10,0"/>
+            
+            <!-- COM Attribute Information Section -->
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="COM Visible:" FontWeight="Bold" VerticalAlignment="Top"/>
+            <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding ComVisibleText}" 
+                       TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,0,10,0"/>
+            
+            <TextBlock Grid.Row="11" Grid.Column="0" Text="GUID:" FontWeight="Bold" VerticalAlignment="Top"/>
+            <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding GuidText}" 
+                       TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,0,10,0"/>
+            
+            <TextBlock Grid.Row="12" Grid.Column="0" Text="ProgId:" FontWeight="Bold" VerticalAlignment="Top"/>
+            <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding ProgIdText}" 
+                       TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,0,10,0"/>
         </Grid>
     </Border>
 </UserControl>

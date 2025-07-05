@@ -16,10 +16,10 @@ namespace OneNoteAddinManager.App.Controls
         public DllInformationControl()
         {
             InitializeComponent();
-            
+
             // Start with no file selected (null)
             UpdateViewModel(null);
-            
+
             // Clean up ViewModel when control is unloaded
             this.Unloaded += DllInformationControl_Unloaded;
         }
@@ -28,7 +28,7 @@ namespace OneNoteAddinManager.App.Controls
         {
             // Dispose old ViewModel
             _viewModel?.Dispose();
-            
+
             // Create new ViewModel for the new path (null = no file)
             _viewModel = new DllInfoViewModel(dllPath, new FileSystem());
             this.DataContext = _viewModel;
