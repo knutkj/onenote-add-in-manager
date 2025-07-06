@@ -4,7 +4,8 @@
 
 OneNote Add-In Manager is a Windows Presentation Foundation (WPF) based
 application for Windows that explains and manages the Windows Registry entries
-required for Microsoft OneNote add-ins to load and work correctly.
+required for Microsoft OneNote add-ins to load and work correctly. Built with
+.NET 9 and featuring the modern Fluent theme for a native Windows experience.
 
 This app is designed both as a **learning tool** and a **practical utility** for
 developers and IT administrators who need to understand or configure OneNote
@@ -47,6 +48,8 @@ learn as they explore.
 - 🔍 View existing OneNote add-in registrations on your machine.
 - ✏️ Edit registry entries safely within the app.
 - 🧭 Built-in sample add-in to demonstrate typical registration.
+- 🎨 Modern UI with .NET 9 WPF Fluent theme that adapts to your system's
+  light/dark mode.
 
 ## Who Should Use This
 
