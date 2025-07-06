@@ -1,0 +1,170 @@
+<UserControl x:Class="OneNoteAddinManager.App.Controls.RegistryKeyGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:OneNoteAddinManager.App.ViewModels"
+             xmlns:converters="clr-namespace:OneNoteAddinManager.App.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="150" d:DesignWidth="500"
+             d:DataContext="{d:DesignInstance Type=local:RegistryKeyGridViewModel, IsDesignTimeCreatable=True}" Background="White">
+    
+    <UserControl.Resources>
+        <!-- Shared Styles -->
+        <Cursor x:Key="LinkCursor">Hand</Cursor>
+        <SolidColorBrush x:Key="LinkColor">Blue</SolidColorBrush>
+
+        <Style x:Key="HyperlinkStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource LinkColor}" />
+            <Setter Property="Cursor" Value="{StaticResource LinkCursor}" />
+        </Style>
+
+        <!-- Path Styles -->
+        <Style x:Key="PathStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style x:Key="PathSegmentStyle" TargetType="TextBlock" BasedOn="{StaticResource PathStyle}">
+            <Setter Property="Foreground" Value="{StaticResource LinkColor}" />
+            <Setter Property="Cursor" Value="{StaticResource LinkCursor}" />
+        </Style>
+
+        <Style x:Key="PathSeparatorStyle" TargetType="TextBlock" BasedOn="{StaticResource PathStyle}">
+            <Setter Property="Foreground" Value="Gray" />
+            <Setter Property="Margin" Value="3,0" />
+        </Style>
+
+        <!-- Other Styles -->
+        <Style x:Key="DescriptionStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Foreground" Value="DimGray" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,6,0,0" />
+        </Style>
+        
+        <Style x:Key="RegistryGridStyle" TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="HeadersVisibility" Value="Column" />
+            <Setter Property="GridLinesVisibility" Value="Vertical" />
+            <Setter Property="VerticalGridLinesBrush" Value="LightGray" />
+            <Setter Property="AlternatingRowBackground" Value="#F9F9F9" />
+            <Setter Property="RowBackground" Value="White" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="LightGray" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="CanUserDeleteRows" Value="False" />
+            <Setter Property="CanUserResizeRows" Value="False" />
+            <Setter Property="SelectionMode" Value="Single" />
+            <Setter Property="Margin" Value="0,6,0,0" />
+        </Style>
+        
+        <Style x:Key="RegistryColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#E8E8E8" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="0,0,1,1" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="2,1" />
+        </Style>
+
+        <Style x:Key="RegistryCellStyle" TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="2,1" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E3F2FD" />
+                    <Setter Property="Foreground" Value="Black" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+    
+    <StackPanel Margin="0">
+        <!-- Header with Registry Path -->
+        <ItemsControl ItemsSource="{Binding PathSegments}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding}" Style="{StaticResource PathSegmentStyle}" />
+                        <TextBlock Text="›" Style="{StaticResource PathSeparatorStyle}">
+                            <TextBlock.Visibility>
+                                <MultiBinding Converter="{x:Static converters:IsNotLastItemConverter.Instance}">
+                                    <Binding />
+                                    <Binding RelativeSource="{RelativeSource AncestorType=ItemsControl}" Path="ItemsSource" />
+                                </MultiBinding>
+                            </TextBlock.Visibility>
+                        </TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
+        <!-- Description Panel -->
+        <TextBlock Text="{Binding Description}" 
+                   Style="{StaticResource DescriptionStyle}" />
+        
+        <!-- Registry Grid -->
+        <DataGrid Style="{StaticResource RegistryGridStyle}" 
+                  ItemsSource="{Binding Entries}">
+            <DataGrid.Columns>
+                <!-- Name Column -->
+                <DataGridTemplateColumn Header="Name" Width="Auto">
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource RegistryColumnHeaderStyle}" />
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource RegistryCellStyle}" />
+                    </DataGridTemplateColumn.CellStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName}" Style="{StaticResource HyperlinkStyle}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
+                <!-- Type Column -->
+                <DataGridTemplateColumn Header="Type" Width="Auto">
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource RegistryColumnHeaderStyle}" />
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource RegistryCellStyle}" />
+                    </DataGridTemplateColumn.CellStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Type}" Style="{StaticResource HyperlinkStyle}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
+                <!-- Data Column -->
+                <DataGridTemplateColumn Header="Data" Width="*">
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource RegistryColumnHeaderStyle}" />
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource RegistryCellStyle}" />
+                    </DataGridTemplateColumn.CellStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Data}" 
+                                       FontFamily="Consolas" 
+                                       FontSize="11" 
+                                       HorizontalAlignment="Left" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+            
+        </DataGrid>
+    </StackPanel>
+</UserControl>
