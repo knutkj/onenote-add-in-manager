@@ -1,0 +1,8 @@
+/LD
+/EHsc
+/Foobj
+src\DebugOneNoteAddIn.cpp
+src\MinimalComObject.cpp
+src\MinimalFactory.cpp
+src\utils.cpp
+/link /DEF:DebugOneNoteAddIn.def advapi32.lib ole32.lib

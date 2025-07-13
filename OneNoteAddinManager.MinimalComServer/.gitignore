@@ -1,0 +1,41 @@
+# *.lib (Library File)
+# In C++ development, .lib files can be one of two things: a static library
+# or an import library. In this project, which creates a DLL, this is an
+# "import library". Think of it as a table of contents for our DLL. When
+# another developer wants to use our DLL in their own application, their
+# compiler's linker will look at this .lib file to see what functions are
+# available and where to find them. It doesn't contain the actual code, just
+# the information needed to "link" to the code in the .dll file at runtime.
+*.lib
+
+# *.obj (Object File)
+# An object file is a key intermediate step in compiling a C++ project. The
+# compiler takes a single source file (.cpp) and translates it into raw machine
+# code, which is stored in an .obj file. This file is not yet a usable
+# program or library. It's a building block. If your project has multiple .cpp
+# files, you will have multiple .obj files. The linker's job is to gather all
+# these blocks and connect them together to create the final DLL.
+*.obj
+
+# *.dll (Dynamic-Link Library)
+# This is the main product of our project. A DLL is a library of compiled code
+# that can be used by other programs. The "Dynamic-Link" part means that an
+# application loads this library at runtime, only when it's needed, rather
+# than having the library's code permanently built into its own .exe file.
+# This allows for code to be shared among multiple applications, and it means
+# we can update this DLL without having to recompile the programs that use it.
+*.dll
+
+# *.exp (Export File)
+# An export file is another intermediate file, created by the linker when it's
+# building a DLL. This file essentially lists all the functions and data that
+# the DLL is making available (or "exporting") to the outside world. The
+# linker uses the information in this .exp file to then generate the
+# corresponding .lib import library. It's a temporary file that's part of the
+# toolchain's internal process for creating a complete, usable library.
+*.exp
+
+# MinimalComServer.log (Log File)
+# This file contains runtime logs from the COM server, useful for debugging and
+# diagnostics.
+MinimalComServer.log
