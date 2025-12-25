@@ -1,54 +1,61 @@
-# OneNote Add-In Manager
+# OneNote Add-in Manager - Refactoring Summary
 
-OneNote Add-In Manager is a Windows Presentation Foundation (WPF) based
-application for Windows that explains and manages the Windows Registry entries
-required for Microsoft OneNote add-ins to load and work correctly.
+This diff represents a **significant refactoring** of the OneNote Add-in Manager
+application, moving from a monolithic code-behind approach to a
+**component-based MVVM (Model-View-ViewModel) architecture**.
 
-This app is designed both as a **learning tool** and a **practical utility** for
-developers and IT administrators who need to understand or configure OneNote
-add-in registration.
+## Key Changes:
 
-## What It Does
+### 1. **New UI Controls**
 
-- **Teaches** the basics of the Windows Registry, with a focus on OneNote
-  add-ins.
-- **Explains** the specific registry keys and values used by OneNote to discover
-  and load add-ins.
-- **Shows** COM registration concepts and how OneNote uses them to instantiate
-  add-in classes.
-- **Lets you** browse, view, and edit add-in registry entries on your local
-  machine.
-- **Includes** a built-in example add-in registration to help you get started
-  even if you have no existing add-ins.
+Five new reusable UserControl components were created:
 
-## How It Works
+- **AddInDetailsPanel** - Composite control for displaying complete add-in
+  information
+- **AddInInformationControl** - Shows basic add-in properties (Name,
+  FriendlyName, Status, GUID, DLL Path, Registry Path)
+- **DllInformationControl** - Displays DLL file metadata (exists, locked, size,
+  modified date)
+- **DocumentationViewerControl** - Renders markdown documentation
+- **OneNoteControl** - Manages OneNote process status and start/stop
+  functionality
 
-OneNote add-ins rely on COM components. For OneNote to find and load these
-components, their CLSIDs and settings must be correctly registered in the
-Windows Registry.
+### 2. **MainWindow Restructuring**
 
-This app displays:
+- **Removed** hundreds of lines of inline UI definition (grids, textblocks,
+  buttons)
+- **Replaced** with single-line control references (e.g.,
+  `<controls:AddInDetailsPanel>`)
+- **Moved** header layout to include Refresh, Cleanup, and OneNote status
+  buttons in the toolbar
+- **Removed** manual documentation viewer UI (replaced with
+  DocumentationViewerControl)
 
-- Registry paths like
-  `HKEY_CURRENT_USER\Software\Microsoft\Office\OneNote\Addins`.
-- Individual registry keys and their data types (e.g., String, DWORD).
-- Common values such as `LoadBehavior` and their meanings.
-- COM Class registration under `HKEY_CLASSES_ROOT\CLSID`.
+### 3. **MVVM Implementation**
 
-It provides explanations in clear, organized **Markdown** pages so users can
-learn as they explore.
+- Created `MainWindowViewModel` to manage selected add-in state
+- Each control has its own ViewModel (`AddInInfoViewModel`, `DllInfoViewModel`,
+  etc.) handling business logic
+- Used **dependency properties** for data binding between parent and child
+  controls
+- Removed **live monitoring code** (ManagementEventWatcher, FileSystemWatcher)
+  from code-behind
 
-## Features
+### 4. **Documentation Update**
 
-- 📖 Educational content about the Windows Registry and COM registration for
-  OneNote add-ins.
-- 🔍 View existing OneNote add-in registrations on your machine.
-- ✏️ Edit registry entries safely within the app.
-- 🧭 Built-in sample add-in to demonstrate typical registration.
+- Completely rewrote `Documentation/welcome.md` with simplified, user-friendly
+  content
+- Changed from technical deep-dive to beginner-friendly explanation of Registry
+  and COM concepts
 
-## Who Should Use This
+### 5. **Minor Updates**
 
-- Developers building OneNote add-ins.
-- IT administrators deploying or troubleshooting add-ins.
-- Anyone wanting to learn about how OneNote integrates with the Windows Registry
-  and COM.
+- Added `BooleanToVisibilityConverter` to `App.xaml` resources
+- Increased MainWindow height from 600 to 800 pixels
+- Updated .gitignore to exclude `.vs` and `.claude/settings.local.json`
+
+## Overall Impact:
+
+The refactoring **improves maintainability** through separation of concerns,
+makes the codebase **more testable**, and creates **reusable UI components**
+while maintaining the same user-facing functionality.
